@@ -1,0 +1,58 @@
+:host {
+    /*background-color: red;*/
+    position: relative;
+    left: 5%;
+}
+
+
+h1 {
+    /*border: 1px solid black;*/
+    /*width: 50%;*/
+}
+
+ul.list {
+    /*border: 1px solid black;*/
+    padding-left: 0px;
+    width: 50%;
+}
+
+ul.list > li {
+    /*border: 1px solid black;*/
+    padding-left: 0px;
+    width: 50%;
+    list-style-type: none;
+    display: grid;
+    grid-template-columns: 70% 150px;
+    margin: 1em 0em 1em 0em; 
+    white-space: nowrap;
+}
+
+ul.list > li > div {
+    display: table-cell;
+    align-content: space-evenly;
+}
+input.addTask {
+    color   : white;
+    background-color    : mediumpurple;
+    padding: 10px;
+    border: 1px solid gray;
+    border-radius: 10px;
+    margin-left: 0.5em;
+    display: inline;
+}
+
+ul.list > li > input {
+    background-color    : lightgray;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    margin-left: 3em;
+    margin-right: 3em;
+    border: 1px solid gray;
+    border-radius: 10px;
+}
+
+input.textTask {
+    border: 1px dotted gray;
+    border-radius: 10px;
+    height: 40px;
+}
