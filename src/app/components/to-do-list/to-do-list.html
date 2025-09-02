@@ -1,11 +1,8 @@
 <h1>ToDo List</h1>
 
 <ul class="list" >
-    @for (toDoItem of toDoList; track toDoItem) {
-         
-            <!-- <div>{{ toDo.text }}</div> <input type="button" value="Delete" class="button button-delete" (click)="deleteToDo ( toDo.id )"> -->
-             <app-to-do-list-item [toDo]="toDoItem" (deleteItemEvent)="deleteToDo($event)"></app-to-do-list-item>
-         
+    @for (toDoItem of toDoList; track toDoItem.id) { 
+        <app-to-do-list-item [toDo]="toDoItem" (deleteItemEvent)="deleteToDo($event)"></app-to-do-list-item>
     }
 </ul>
 
