@@ -16,24 +16,30 @@ ul.list {
 }
 
 .button {
-    color               : white; 
-    border              : 0px;
-    border-radius       : 10px;
+    color: white;
+    border: 0px;
+    border-radius: 10px;
 }
 
 .button-add {
-    background-color    : green;
-    padding             : 10px;
-    margin-left         : 0.5em;
-    display             : inline;
+    background-color: green;
+    padding: 10px;
+    margin-left: 0.5em;
+    display: inline;
 }
 
 .todo-add {
-    color               : gray;
-    background-color    : white;
-    padding             : 10px;
-    border              : 1px solid gray;
-    border-radius       : 10px;
-    margin-left         : 0.5em;
-    display             : inline;
+    color: gray;
+    background-color: white;
+    padding: 10px;
+    border: 1px solid gray;
+    border-radius: 10px;
+    margin-left: 0.5em;
+    display: inline;
+}
+
+img {
+    padding: 50px;
+    height: 100px;
+    width: 100px;
 }
