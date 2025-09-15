@@ -1,7 +1,7 @@
 :host {
     /*background-color: red;*/
     position: relative;
-    left: 5%;
+    left: 50px;
 }
 
 h1 {
@@ -9,10 +9,17 @@ h1 {
     /*width: 50%;*/
 }
 
+div.list-container {
+    display: flex;
+    align-items: first baseline;
+    justify-content: start;
+}
 ul.list {
     /*border: 1px solid black;*/
     padding-left: 0px;
-    width: 50%;
+    width: 30%;
+    display: inline-block;
+    vertical-align: top;
 }
 
 .button {
@@ -25,7 +32,6 @@ ul.list {
     background-color: green;
     padding: 10px;
     margin-left: 0.5em;
-    display: inline;
 }
 
 .todo-add {
@@ -38,8 +44,60 @@ ul.list {
     display: inline;
 }
 
+.tooltip-add {
+    background-color: white;
+    padding: 10px;
+    border: 1px solid gray;
+    border-radius: 10px;
+    margin-left: 0.5em;
+    display: block;
+}
+
+.tooltip {
+    border: 1px solid yellowgreen;
+    min-width: 200px;
+    min-height: 100px;
+    max-height: 100px;
+    border-radius: 10px;
+    display: inline-block;
+    vertical-align: bottom;
+    padding: 10px;
+}
+
 img {
     padding: 50px;
     height: 100px;
     width: 100px;
+}
+
+.selected {
+    background-color: lightgreen;
+    padding: 0px;
+}
+
+.tooltip-content {
+  position: relative;
+  display: inline-block;
+  border-radius: 10px;
+}
+
+.tooltip-content .tooltip-text {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  bottom: 75%;
+  left: 50%;
+  margin-left: -60px;
+}
+
+.tooltip-content:hover .tooltip-text {
+  visibility: visible;
 }
