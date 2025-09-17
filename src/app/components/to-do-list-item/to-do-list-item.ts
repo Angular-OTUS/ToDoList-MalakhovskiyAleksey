@@ -1,9 +1,9 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Highlight } from '../../directives';
+import { Highlight, TextTitle } from '../../directives';
 
 @Component({
   selector: 'app-to-do-list-item',
-  imports: [Highlight],
+  imports: [Highlight,TextTitle],
   templateUrl: './to-do-list-item.html',
   styleUrl: './to-do-list-item.css'
 })

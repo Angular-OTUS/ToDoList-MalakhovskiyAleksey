@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 
 import { ToDoListItem } from '../to-do-list-item/to-do-list-item'
-import { ShowIf } from '../../directives'
+import { ShowIf, TextTitle } from '../../directives'
 
 @Component({
   selector: 'app-to-do-list',
-  imports: [FormsModule, ToDoListItem, ShowIf],
+  imports: [FormsModule, ToDoListItem, ShowIf, TextTitle],
   templateUrl: './to-do-list.html',
   styleUrl: './to-do-list.css'
 })
