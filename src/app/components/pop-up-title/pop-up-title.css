@@ -1,0 +1,14 @@
+.title-container {
+    background-color: black;
+    white-space: nowrap;
+    text-align: center;
+    color: white;
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 10px;
+    max-height: 24px;
+    height: 24px;
+    width: 10%;
+    position: fixed;
+    z-index: 2;
+}
