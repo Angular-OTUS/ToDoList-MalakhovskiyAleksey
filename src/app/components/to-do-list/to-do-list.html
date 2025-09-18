@@ -4,12 +4,25 @@
 @else {
     <h1>ToDo List</h1>
 
-    <ul class="list">
-        @for (toDoItem of toDoList; track toDoItem.id) {
-            <app-to-do-list-item [toDo]="toDoItem" (deleteItemEvent)="deleteToDo($event)"></app-to-do-list-item>
-        }
-    </ul>
-
-    <input type="text" placeholder="Add your new todo" class="todo-add" size="30" [(ngModel)]="newToDo" (ngModelChange)="changeValue()">
-    <input type="button" value="Add task" class="button button-add" (click)="addToDo()" [disabled]="disabled" [style.opacity]="opacity">
+    <div class="list-container">
+        <ul class="list">
+            @for (toDoItem of toDoList; track toDoItem.id) {
+                
+                <div [class.selected] = "isSelected(toDoItem.id)" >
+                    <app-to-do-list-item [toDo]="toDoItem"
+                                        (deleteItemEvent)="deleteToDo($event)"
+                                        (selectItemEvent)="selectToDo($event)"
+                                                     
+                    ></app-to-do-list-item>
+                </div>
+                
+            }
+        </ul>
+        <div style="min-width: 20px;"></div>
+        <div class="tooltip" *appShowIf='showToolTip()'>{{ toolTip() }}</div>
+    </div>
+    <input type="text" placeholder="Add your new todo" class="todo-add" size="30" [(ngModel)]="newToDo" (ngModelChange)="changeValue()" appTextTitle [text]="'new task name'">
+    <input type="button" value="Add task" class="button button-add" (click)="addToDo()" [disabled]="disabled" [style.opacity]="opacity" appTextTitle [text]="'Add new task'">
+    <textarea cols="30" rows="5" placeholder="Add your new tooltip" class="tooltip-add" [(ngModel)]="newToolTip" appTextTitle [text]="'new task description'"></textarea>
+    
 }
