@@ -28,3 +28,21 @@ li>div {
     margin-left: 3em;
     margin-right: 3em;
 }
+
+.button-save {
+    background-color: blueviolet;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    margin-left: 3em;
+    margin-right: 3em;
+}
+
+.todo-change {
+    color: black;
+    background-color: white;
+    padding: 10px;
+    border: 1px solid gray;
+    border-radius: 10px;
+    margin-left: 0.5em;
+    display: inline;
+}

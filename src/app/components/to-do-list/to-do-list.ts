@@ -1,22 +1,25 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, inject, OnInit, Renderer2 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 
 import { ToDoListItem } from '../to-do-list-item/to-do-list-item'
 import { ShowIf, TextTitle } from '../../directives'
+import { ToDo } from '../../entities/toDo'
+import { ToDoListService } from '../../services/to-do-list-service'
+import { ToastsComponent } from "../toasts-component/toasts-component"
+import { ToastService } from '../../services/toast-service'
 
 @Component({
   selector: 'app-to-do-list',
-  imports: [FormsModule, ToDoListItem, ShowIf, TextTitle],
+  imports: [FormsModule, ToDoListItem, ShowIf, TextTitle, ToastsComponent],
   templateUrl: './to-do-list.html',
   styleUrl: './to-do-list.css'
 })
 export class ToDoList implements OnInit {
 
-  toDoList = [
-    { id: 1, text: "Buy a new gaming laptop", description : "tooltip 1" },
-    { id: 2, text: "Complete previos task", description : "tooltip 2" },
-    { id: 3, text: "Create some angular app", description : "tooltip 3" },
-  ]
+  toDoListService : ToDoListService = inject ( ToDoListService )
+  toastService : ToastService = inject ( ToastService )
+
+  toDoList : ToDo[] = this.toDoListService.getList()
 
   newToDo: string = ""
   disabled: boolean = this.newToDo.trim().length == 0
@@ -26,6 +29,10 @@ export class ToDoList implements OnInit {
   isLoading: boolean = true
   selectedItemId : number | null = null
   
+  displayToasts : string = "none"
+
+  constructor ( private renderer: Renderer2 ) {}
+  
   changeValue(): void {
     this.disabled = this.newToDo.trim().length == 0
     this.opacity = this.newToDo.trim().length == 0 ? 0.5 : 1.0
@@ -34,32 +41,29 @@ export class ToDoList implements OnInit {
   ngOnInit() {
 
     setTimeout(() => this.isLoading = false, 500)
-
+    this.toDoListService.init()
   }
 
   addToDo(): void {
 
-    let maxId = 1
-
-    if (this.toDoList.length) {
-      maxId = this.toDoList.reduce((prev, current) =>
-        prev.id > current.id ? prev : current
-      ).id + 1
-    }
-
-    this.toDoList.push({
-        id: maxId
-      , text: this.newToDo
-      , description : this.newToolTip
-    }
-    )
+    this.toDoListService.add ( this.newToDo, this.newToolTip )
+    this.toastService.addMesssage ( "added: " + this.newToDo )
+    this.showToast()
 
   }
 
   deleteToDo(id: number): void {
-    let index = this.toDoList.findIndex(item => item.id === id)
-    this.toDoList.splice(index, 1)
+
+    let deletedToDo = this.toDoListService.read ( id )
+    this.toDoListService.remove ( id )
     if ( id == this.selectedItemId )  this.selectedItemId = null
+
+    const placeholders = document.querySelectorAll('#forDeleteID-' + id)
+    for ( let i = 0; i < placeholders.length; i++ ) {
+      this.renderer.removeChild ( document, placeholders[i] );
+    }
+    this.toastService.addMesssage ( "deleted: " + deletedToDo.text )
+    this.showToast()
   }
 
   selectToDo(id: number): void {
@@ -78,4 +82,16 @@ export class ToDoList implements OnInit {
   isSelected ( id : number ) : boolean {
     return id == this.selectedItemId
   }
+
+  changeToDo (id: number) : void {
+    let changedToDo = this.toDoListService.read ( id )
+    this.toastService.addMesssage ( "changed: " + changedToDo.text )
+    this.showToast()
+  }
+
+  showToast() : void {
+    this.displayToasts = ""
+    setTimeout(() => this.displayToasts = 'none', 3000)
+  }
+
 }
