@@ -8,6 +8,7 @@ import { Component, Input } from '@angular/core';
 })
 export class PopUpTitle {
 
+  @Input("id") id : string = ""
   @Input("text") text : string = "initial"
   @Input() x : number = 0
   @Input() top : number = 0

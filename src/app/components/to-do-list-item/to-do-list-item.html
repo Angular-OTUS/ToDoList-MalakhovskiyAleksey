@@ -1,3 +1,9 @@
 <li appHighlight>
-    <div (click)="selectItemToDo(toDo.id)" appTextTitle [text]="toDo.description">{{ toDo.text }}</div> <input type="button" value="Delete" class="button button-delete" (click)="deleteItemToDo ( toDo.id )" appTextTitle [text]="'delete ' + toDo.text"> 
+    
+    <div (click)="selectItemToDo(toDo.id)" appTextTitle [text]="toDo.description" (dblclick)="changeItemToDo()" [style.display]="displayShow">{{ toDo.text }}</div>
+    <input type="button" value="Delete" class="button button-delete" [style.display]="displayShow" (click)="deleteItemToDo ( toDo.id )" appTextTitle [text]="'delete ' + toDo.text" [id]="'forDeleteID-' + toDo.id"> 
+    
+    <input type="text" class="todo-change" [style.display]="displayChange" [(ngModel)]="toDo.text"> 
+    <input type="button" value="Save" class="button button-save" [style.display]="displayChange" (click)="saveItemToDo ()">
+
 </li>

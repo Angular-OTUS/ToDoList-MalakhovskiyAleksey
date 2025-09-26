@@ -12,7 +12,7 @@
                     <app-to-do-list-item [toDo]="toDoItem"
                                         (deleteItemEvent)="deleteToDo($event)"
                                         (selectItemEvent)="selectToDo($event)"
-                                                     
+                                        (changedItemEvent)="changeToDo($event)"             
                     ></app-to-do-list-item>
                 </div>
                 
@@ -24,5 +24,8 @@
     <input type="text" placeholder="Add your new todo" class="todo-add" size="30" [(ngModel)]="newToDo" (ngModelChange)="changeValue()" appTextTitle [text]="'new task name'">
     <input type="button" value="Add task" class="button button-add" (click)="addToDo()" [disabled]="disabled" [style.opacity]="opacity" appTextTitle [text]="'Add new task'">
     <textarea cols="30" rows="5" placeholder="Add your new tooltip" class="tooltip-add" [(ngModel)]="newToolTip" appTextTitle [text]="'new task description'"></textarea>
-    
+ 
+    <app-toasts-component [display]="displayToasts"></app-toasts-component>
+
+
 }
