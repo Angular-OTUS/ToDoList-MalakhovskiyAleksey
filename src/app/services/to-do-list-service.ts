@@ -1,65 +1,53 @@
-import { Injectable, OnInit } from '@angular/core';
+import { inject, Injectable, OnInit } from '@angular/core';
 import { ToDo } from '../entities/toDo';
+import { ToDoStatus } from '../const/to-do-status';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../environments/environment'
+import { concatMap, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ToDoListService {
-  
-  private toDoInitialList : ToDo[] = [
-    new ToDo ( 1, "Buy a new gaming laptop",  "tooltip 1" ),
-    new ToDo ( 2, "Complete previos task", "tooltip 2" ),
-    new ToDo ( 3, "Create some angular app", "tooltip 3" ),
-  ]
 
-  public toDoList : ToDo[] = this.toDoInitialList
+  private  readonly http = inject ( HttpClient )
   
-  init(): void {
-    this.toDoList = this.toDoInitialList
+  public toDoList : ToDo[] = []
+  
+  public  getList () : Observable<ToDo []> {
+    return this.http.get<ToDo []>( environment.apiUrl )
   }
 
-  public  getList () : ToDo[] {
-    return this.toDoList
+  public  read ( id : number ) : Observable<ToDo> {
+    return this.http.get<ToDo>( environment.apiUrl + "/" + id )
   }
-
   public add (
       text : string,
       description : string,
-    ) : void  {
+    ) : Observable<ToDo>  {
 
-    let maxId : number = 1
-
-    if ( this.toDoList.length ) {
-      maxId = this.toDoList.reduce((prev, current) =>
-        prev.id > current.id ? prev : current
-      ).id + 1
-    }
-    this.toDoList.push ( new ToDo ( maxId, text, description ) )
-
+    return this.getList().pipe (
+      concatMap ( (toDoList : ToDo [] ) =>  {
+        let maxId : number = 1
+        if ( toDoList.length ) {
+            maxId = toDoList.reduce((prev, current) =>
+              prev.id > current.id ? prev : current
+            ).id + 1
+        }
+        let newToDo : ToDo = new ToDo ( maxId, text, description, ToDoStatus.inProgress )
+        return this.http.post<ToDo> ( environment.apiUrl, newToDo )
+      })
+    )
+      
   }
 
-  public remove ( id : number ) : void {
-
-    let index = this.toDoList.findIndex(item => item.id === id)
-    this.toDoList.splice(index, 1)
-    
+  public remove ( id : number ) : Observable<ToDo> {
+    return this.http.delete<ToDo> ( environment.apiUrl + "/" + id  )
+  
   }
 
-  public  update ( toDo : ToDo )  {
-
-    let index = -1;
-    index = this.toDoList.findIndex(item => item.id === toDo.id)
-    if ( index > -1 )  {
-      this.toDoList[index].text = toDo.text
-      this.toDoList[index].description = toDo.description
-    }
-
+  public  update ( toDo : ToDo ) : Observable<ToDo> {
+    return this.http.put<ToDo> ( environment.apiUrl + "/" + toDo.id, toDo )
   }
 
-  public  read ( id : number ) : ToDo {
-
-    let index = this.toDoList.findIndex(item => item.id === id)
-    return this.toDoList[index]
-    
-  }
 }
