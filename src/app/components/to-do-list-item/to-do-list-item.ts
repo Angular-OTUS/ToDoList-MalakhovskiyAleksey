@@ -24,11 +24,9 @@ export class ToDoListItem {
   @Output() changedItemEvent = new EventEmitter<number>()
   @Output() changedItemStatusEvent = new EventEmitter<number>()
 
-
   displayShow : string = ""
   displayChange : string = "none"
 
-  updateToDo : string = ""
   completed : ToDoStatus = ToDoStatus.completed
 
   deleteItemToDo(id: number): void {
@@ -39,19 +37,27 @@ export class ToDoListItem {
     this.selectItemEvent.emit(id)
   }
 
+  showItemToDo ()  {
+    this.displayShow = ""
+    this.displayChange = "none"
+  }
+
   changeItemToDo () : void {
     this.displayShow = "none"
     this.displayChange = ""
   }
 
   saveItemToDo () : void {
-    this.displayShow = ""
-    this.displayChange = "none" 
+    this.showItemToDo() 
     this.changedItemEvent.emit(this.toDo.id)
     this.selectItemToDo (this.toDo.id)
   }
 
   changeStatus(id: number)  {
     this.changedItemStatusEvent.emit(id)
+  }
+
+  getId () : number {
+    return this.toDo.id
   }
 }

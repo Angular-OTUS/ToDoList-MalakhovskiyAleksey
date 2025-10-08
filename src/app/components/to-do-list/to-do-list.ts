@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, Renderer2 } from '@angular/core'
+import { Component, inject, OnInit, QueryList, Renderer2, ViewChildren } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 
 import { ToDoListItem } from '../to-do-list-item/to-do-list-item'
@@ -34,6 +34,8 @@ export class ToDoList implements OnInit {
   displayToasts : string = "none"
   curToolTip : string = ""
   fl : string | null = null
+
+  @ViewChildren(ToDoListItem) toDoListItems!: QueryList<ToDoListItem>;
 
   constructor ( private renderer: Renderer2 ) {}
   
@@ -80,6 +82,8 @@ export class ToDoList implements OnInit {
   }
 
   selectToDo(id: number): void {
+
+    this.toDoListItems.filter(toDoItem => toDoItem.getId() !== id && toDoItem.getId() === this.selectedItemId ).forEach ( toDoItem => toDoItem.showItemToDo() )
     this.selectedItemId = id
     this.toDoListService.getList().pipe(
       concatMap ( toDoList =>  {
@@ -126,13 +130,6 @@ export class ToDoList implements OnInit {
       })
     ).subscribe ( toDoList => this.curToDoList = toDoList )
 
-    /*
-    let changedToDo = this.toDoListService.read ( id )
-    if  ( changedToDo.status == ToDoStatus.completed )  changedToDo.status = ToDoStatus.inProgress
-    else changedToDo.status = ToDoStatus.completed
-    this.toastService.addMesssage ( "changed: " + changedToDo.status )
-    this.showToast()
-    */
   }
 
   showToast() : void {
