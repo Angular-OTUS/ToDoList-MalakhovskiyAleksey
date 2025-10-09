@@ -1,0 +1,30 @@
+.todo-add {
+    color: gray;
+    background-color: white;
+    padding: 10px;
+    border: 1px solid gray;
+    border-radius: 10px;
+    margin-left: 0.5em;
+    display: inline;
+}
+
+.tooltip-add {
+    background-color: white;
+    padding: 10px;
+    border: 1px solid gray;
+    border-radius: 10px;
+    margin-left: 0.5em;
+    display: block;
+}
+
+.button {
+    color: white;
+    border: 0px;
+    border-radius: 10px;
+}
+
+.button-add {
+    background-color: green;
+    padding: 10px;
+    margin-left: 0.5em;
+}

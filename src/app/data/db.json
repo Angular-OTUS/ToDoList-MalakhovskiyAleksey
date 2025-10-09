@@ -1,0 +1,22 @@
+{
+    "todos": [
+        {
+            "id": 1,
+            "text": "Buy a new gaming laptop",
+            "description": "tooltip 1",
+            "status": "InProgess"
+        },
+        {
+            "id": 2,
+            "text": "Complete previos task",
+            "description": "tooltip 2",
+            "status": "Completed"
+        },
+        {
+            "id": 3,
+            "text": "Create some angular app",
+            "description": "tooltip 3",
+            "status": "Completed"
+        }
+    ]
+}

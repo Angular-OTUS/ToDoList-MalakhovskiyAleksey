@@ -1,9 +1,29 @@
 <li appHighlight>
     
-    <div (click)="selectItemToDo(toDo.id)" appTextTitle [text]="toDo.description" (dblclick)="changeItemToDo()" [style.display]="displayShow">{{ toDo.text }}</div>
-    <input type="button" value="Delete" class="button button-delete" [style.display]="displayShow" (click)="deleteItemToDo ( toDo.id )" appTextTitle [text]="'delete ' + toDo.text" [id]="'forDeleteID-' + toDo.id"> 
+    <div (click)="selectItemToDo(toDo.id)" appTextTitle [text]="toDo.description" (dblclick)="changeItemToDo()" [style.display]="displayShow">
+        <input type="checkbox" [checked] = "toDo.status == completed" (click)="changeStatus(toDo.id)">
+        {{ toDo.text }}
+    </div>
+    <app-button-component [buttonTitle]="'Delete'"
+                          [buttonClasses]="'button button-delete'"
+                          (actionEvent)="deleteItemToDo(toDo.id)"
+                          [style.display]="displayShow"
+                          appTextTitle [text]="'delete ' + toDo.text"
+                          [id]="'forDeleteID-' + toDo.id"
+    ></app-button-component>
     
-    <input type="text" class="todo-change" [style.display]="displayChange" [(ngModel)]="toDo.text"> 
-    <input type="button" value="Save" class="button button-save" [style.display]="displayChange" (click)="saveItemToDo ()">
+    <input
+        (click)="selectItemToDo(toDo.id)"
+        type="text"
+        class="todo-change"
+        [style.display]="displayChange"
+        [(ngModel)]="toDo.text"
+    /> 
+    <app-button-component [buttonTitle]="'Save'"
+                          [buttonClasses]="'button button-save'"
+                          appTextTitle [text]="'Save changed todo'"
+                          (actionEvent)="saveItemToDo()"
+                          [style.display]="displayChange"
+    ></app-button-component>
 
 </li>

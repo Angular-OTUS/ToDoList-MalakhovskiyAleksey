@@ -1,0 +1,29 @@
+
+
+.button {
+    color: white;
+    border: 0px;
+    border-radius: 10px;
+}
+
+.button-add {
+    background-color: green;
+    padding: 10px;
+    margin-left: 0.5em;
+}
+
+.button-delete {
+    background-color: red;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    margin-left: 3em;
+    margin-right: 3em;
+}
+
+.button-save {
+    background-color: blueviolet;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    margin-left: 3em;
+    margin-right: 3em;
+}
