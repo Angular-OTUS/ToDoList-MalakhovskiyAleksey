@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, inject  } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, OnInit  } from '@angular/core';
 import { FormsModule } from '@angular/forms'
 
 import { Highlight, TextTitle } from '../../directives';
@@ -6,6 +6,9 @@ import { ToDo } from '../../entities/toDo';
 import { ToDoListService } from '../../services/to-do-list-service';
 import { ButtonComponent } from '../../components/button-component/button-component'
 import { ToDoStatus } from '../../const/to-do-status';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { filter, tap } from 'rxjs';
 
 @Component({
   selector: 'app-to-do-list-item',
@@ -20,7 +23,6 @@ export class ToDoListItem {
   @Input({ required: true }) toDo = new ToDo ( 0, "", "", ToDoStatus.inProgress )
 
   @Output() deleteItemEvent = new EventEmitter<number>()
-  @Output() selectItemEvent = new EventEmitter<number>()
   @Output() changedItemEvent = new EventEmitter<number>()
   @Output() changedItemStatusEvent = new EventEmitter<number>()
 
@@ -29,12 +31,24 @@ export class ToDoListItem {
 
   completed : ToDoStatus = ToDoStatus.completed
 
+  private readonly router = inject(Router)
+  //private readonly routerEvents = toSignal (
+  //  this.router.events.pipe (
+  //    //filter ( (event) => event instanceof NavigationEnd),
+  //    tap ( (event) => console.log("ToDoListItem routerEvent: " + event) )
+  //  )
+  //)
+  
+  private readonly route = inject(ActivatedRoute)
+  //ivate readonly query = toSignal(
+  //this.route.queryParams.pipe( tap((q) => console.log("ToDoListItem queryParams: " + JSON.stringify(q))) )
+  //
+  //ivate readonly data = toSignal(
+  //this.route.data.pipe( tap((q) => console.log("ToDoListItem data: " + JSON.stringify(q))) )
+  //
+  
   deleteItemToDo(id: number): void {
     this.deleteItemEvent.emit(id)
-  }
-
-  selectItemToDo(id: number): void {
-    this.selectItemEvent.emit(id)
   }
 
   showItemToDo ()  {
@@ -50,7 +64,6 @@ export class ToDoListItem {
   saveItemToDo () : void {
     this.showItemToDo() 
     this.changedItemEvent.emit(this.toDo.id)
-    this.selectItemToDo (this.toDo.id)
   }
 
   changeStatus(id: number)  {

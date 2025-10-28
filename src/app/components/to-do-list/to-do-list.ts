@@ -1,19 +1,20 @@
-import { Component, inject, OnInit, QueryList, Renderer2, ViewChildren } from '@angular/core'
+import { Component, ElementRef, inject, OnInit, QueryList, Renderer2, ViewChildren } from '@angular/core'
+import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd, ActivatedRoute } from '@angular/router'
 import { FormsModule } from '@angular/forms'
 
 import { ToDoListItem } from '../to-do-list-item/to-do-list-item'
-import { ShowIf } from '../../directives'
 import { ToDo } from '../../entities/toDo'
 import { ToDoListService } from '../../services/to-do-list-service'
 import { ToastsComponent } from "../toasts-component/toasts-component"
 import { ToastService } from '../../services/toast-service'
 import { ToDoStatus } from '../../const/to-do-status'
 import { TodoCreateItem } from '../todo-create-item/todo-create-item'
-import { concatMap, of } from 'rxjs'
+import { concatMap, filter, of, tap } from 'rxjs'
+import { toSignal } from '@angular/core/rxjs-interop'
 
 @Component({
   selector: 'app-to-do-list',
-  imports: [FormsModule, ToDoListItem, ShowIf, ToastsComponent, TodoCreateItem],
+  imports: [RouterOutlet,RouterLink,RouterLinkActive, FormsModule, ToDoListItem, ToastsComponent, TodoCreateItem],
   templateUrl: './to-do-list.html',
   styleUrl: './to-do-list.css'
 })
@@ -29,13 +30,30 @@ export class ToDoList implements OnInit {
   opacity: number = this.newToDo.trim().length == 0 ? 0.5 : 1.0
 
   isLoading: boolean = true
-  selectedItemId : number | null = null
   
   displayToasts : string = "none"
   curToolTip : string = ""
   fl : string | null = null
 
-  @ViewChildren(ToDoListItem) toDoListItems!: QueryList<ToDoListItem>;
+  @ViewChildren(ToDoListItem) childComponents!: QueryList<ToDoListItem>;
+
+  private readonly router = inject(Router)
+  //private readonly routerEvents = toSignal (
+  //  this.router.events.pipe (
+  //    filter ( event => event instanceof NavigationEnd),
+  //    tap ( event => {
+  //      console.log("ToDoList routeEvent: " + event )        
+  //    } )
+  //  )
+  //)
+
+  private readonly route = inject(ActivatedRoute)
+  //private readonly query = toSignal(
+  //  this.route.queryParams.pipe( tap((q) => console.log("ToDoList queryParams: " + JSON.stringify(q))) )
+  //)
+  //private readonly data = toSignal(
+  //  this.route.data.pipe( tap((q) => console.log("ToDoList data: " + JSON.stringify(q))) )
+  //)
 
   constructor ( private renderer: Renderer2 ) {}
   
@@ -47,6 +65,12 @@ export class ToDoList implements OnInit {
   ngOnInit() {
     setTimeout(() => this.isLoading = false, 500)
     this.toDoListService.getList().subscribe ( toDoList => this.curToDoList = toDoList )
+    //this.router.events.subscribe ( (event) => {
+    //  //if (event instanceof NavigationEnd) {
+    //    // Handle route change here
+    //    console.log("ToDoList routeEvent: " + event);
+    //  //}
+    //})
   }
 
   addToDo( toDo : ToDo ): void {
@@ -71,35 +95,14 @@ export class ToDoList implements OnInit {
         }
         this.toastService.addMesssage ( "deleted: " + deletedToDo.text )
         this.showToast()
-        if  ( deletedToDo.id == this.selectedItemId ) {
-          this.curToolTip = ""
-          this.selectedItemId = 0
-        }
+        
         return this.toDoListService.getList()
       })
-    ).subscribe ( toDoList => this.curToDoList = toDoList )   
+    ).subscribe ( (toDoList) => {
+      this.router.navigate(["tasks"])
+      this.curToDoList = toDoList
+     })   
     
-  }
-
-  selectToDo(id: number): void {
-
-    this.toDoListItems.filter(toDoItem => toDoItem.getId() !== id && toDoItem.getId() === this.selectedItemId ).forEach ( toDoItem => toDoItem.showItemToDo() )
-    this.selectedItemId = id
-    this.toDoListService.getList().pipe(
-      concatMap ( toDoList =>  {
-        let index = toDoList.findIndex(item => item.id === this.selectedItemId)
-        return of(toDoList[index].description)
-      })
-    ).subscribe ( (description : string) => { this.curToolTip = description} )
-    
-  } 
-
-  public  showToolTip() : boolean {
-    return this.selectedItemId != null
-  }
-
-  isSelected ( id : number ) : boolean {
-    return id == this.selectedItemId
   }
 
   changeToDo (id: number) : void {
@@ -130,6 +133,14 @@ export class ToDoList implements OnInit {
       })
     ).subscribe ( toDoList => this.curToDoList = toDoList )
 
+  }
+
+  onRouterLinkActive (id : number, event: any)  {
+    if  ( ! event )  {
+      this.childComponents.toArray()
+        .filter ( el => el.getId() === id )
+        .forEach ( el => el.showItemToDo() )
+    }
   }
 
   showToast() : void {

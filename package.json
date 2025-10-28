@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "run-p json-server serve",
-    "serve" : "ng serve",
+    "serve": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
@@ -29,6 +29,7 @@
     "@angular/platform-browser": "^20.1.0",
     "@angular/router": "^20.1.0",
     "angular-eslint": "^20.2.0",
+    "ngx-quicklink": "^0.4.8",
     "run-p": "^0.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

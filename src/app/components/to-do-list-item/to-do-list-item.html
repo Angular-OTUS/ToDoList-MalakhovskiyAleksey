@@ -1,6 +1,10 @@
 <li appHighlight>
     
-    <div (click)="selectItemToDo(toDo.id)" appTextTitle [text]="toDo.description" (dblclick)="changeItemToDo()" [style.display]="displayShow">
+    <div 
+        appTextTitle [text]="toDo.description"
+        (dblclick)="changeItemToDo()"
+        [style.display]="displayShow"
+    >
         <input type="checkbox" [checked] = "toDo.status == completed" (click)="changeStatus(toDo.id)">
         {{ toDo.text }}
     </div>
@@ -13,7 +17,6 @@
     ></app-button-component>
     
     <input
-        (click)="selectItemToDo(toDo.id)"
         type="text"
         class="todo-change"
         [style.display]="displayChange"

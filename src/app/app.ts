@@ -1,14 +1,12 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-
-import { ToDoList } from './components/to-do-list/to-do-list';
+import { Component, signal } from '@angular/core'
+import { RouterOutlet } from '@angular/router'
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet,ToDoList],
+  imports: [RouterOutlet],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App {
-  protected readonly title = signal('otus-tut');
+  protected readonly title = signal('otus-tut')
 }

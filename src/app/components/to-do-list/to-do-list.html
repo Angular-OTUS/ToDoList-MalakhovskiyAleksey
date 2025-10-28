@@ -14,24 +14,29 @@
         <ul class="list">
             @for (toDoItem of curToDoList; track toDoItem.id) {
                 @if  ( filter(toDoItem) )  {
-                    <div [class.selected] = "isSelected(toDoItem.id)" >
+                    <div [routerLink]="[toDoItem.id]"
+                         routerLinkActive="selected"
+                         [routerLinkActiveOptions]="{ exact : true }"
+                         (isActiveChange)="onRouterLinkActive(toDoItem.id,$event)"
+                    >
                         <app-to-do-list-item [toDo]="toDoItem"
                                             (deleteItemEvent)="deleteToDo($event)"
-                                            (selectItemEvent)="selectToDo($event)"
                                             (changedItemEvent)="changeToDo($event)"
-                                            (changedItemStatusEvent)="changeToDoStatus($event)"                              
+                                            (changedItemStatusEvent)="changeToDoStatus($event)"    
+                                            
                         ></app-to-do-list-item>
                     </div>
                 }
             }
         </ul>
         <div style="min-width: 20px;"></div>
-        <div class="tooltip" *appShowIf='showToolTip()'>{{ curToolTip }}</div>
+        <router-outlet/>
+
     </div>
 
     <app-todo-create-item (addItemEvent)="addToDo($event)"></app-todo-create-item>
         
     <app-toasts-component [display]="displayToasts"></app-toasts-component>
 
-
+    
 }
