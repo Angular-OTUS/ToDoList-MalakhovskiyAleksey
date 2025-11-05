@@ -3,7 +3,7 @@
     <div 
         appTextTitle [text]="toDo.description"
         (dblclick)="changeItemToDo()"
-        [style.display]="displayShow"
+        [style.display]="displayShow()"
     >
         <input type="checkbox" [checked] = "toDo.status == completed" (click)="changeStatus(toDo.id)">
         {{ toDo.text }}
@@ -11,7 +11,7 @@
     <app-button-component [buttonTitle]="'Delete'"
                           [buttonClasses]="'button button-delete'"
                           (actionEvent)="deleteItemToDo(toDo.id)"
-                          [style.display]="displayShow"
+                          [style.display]="displayShow()"
                           appTextTitle [text]="'delete ' + toDo.text"
                           [id]="'forDeleteID-' + toDo.id"
     ></app-button-component>
@@ -19,14 +19,14 @@
     <input
         type="text"
         class="todo-change"
-        [style.display]="displayChange"
+        [style.display]="displayChange()"
         [(ngModel)]="toDo.text"
     /> 
     <app-button-component [buttonTitle]="'Save'"
                           [buttonClasses]="'button button-save'"
                           appTextTitle [text]="'Save changed todo'"
                           (actionEvent)="saveItemToDo()"
-                          [style.display]="displayChange"
+                          [style.display]="displayChange()"
     ></app-button-component>
 
 </li>

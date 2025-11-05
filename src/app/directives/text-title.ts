@@ -1,4 +1,4 @@
-import { AfterViewInit, Directive, ElementRef, Input, TemplateRef, ViewContainerRef, HostListener, ComponentRef, Renderer2 } from '@angular/core';
+import { Directive, ElementRef, ViewContainerRef, HostListener, ComponentRef, Renderer2, input } from '@angular/core';
 import { PopUpTitle } from '../components/pop-up-title/pop-up-title';
 
 @Directive({
@@ -7,18 +7,17 @@ import { PopUpTitle } from '../components/pop-up-title/pop-up-title';
 })
 export class TextTitle {
 
-  @Input() id: string = ""
-  @Input() text: string = ""
+  id = input<string>()
+  text = input<string>()
 
   private componentRef: ComponentRef<PopUpTitle> | null = null
 
   @HostListener("mouseenter") onMouseEnter() {
 
     if (!this.componentRef) {
-
       this.componentRef = this.viewContainerRef.createComponent(PopUpTitle)
-      this.componentRef.instance.id = this.id
-      this.componentRef.instance.text = this.text
+      this.componentRef.instance.id = this.id() ?? ""
+      this.componentRef.instance.text = this.text() ?? ""
       this.componentRef.instance.x = this.elementRef.nativeElement.getBoundingClientRect().left
         + (this.elementRef.nativeElement.getBoundingClientRect().right - this.elementRef.nativeElement.getBoundingClientRect().left) / 10
       this.componentRef.instance.top = this.elementRef.nativeElement.getBoundingClientRect().top - 45

@@ -1,6 +1,7 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core'
-import { provideRouter,   withViewTransitions, withComponentInputBinding} from '@angular/router'
+import { provideRouter,   withViewTransitions, withComponentInputBinding, withPreloading} from '@angular/router'
 import { provideHttpClient, withInterceptors, withInterceptorsFromDi, withJsonpSupport } from '@angular/common/http'
+import { QuicklinkStrategy } from 'ngx-quicklink'
 
 import { routes } from './app.routes'
 
@@ -12,6 +13,7 @@ export const appConfig: ApplicationConfig = {
       routes,
       withViewTransitions(),
       withComponentInputBinding(),
+      withPreloading(QuicklinkStrategy)
     ),
     provideHttpClient ( 
                         withInterceptors([]),

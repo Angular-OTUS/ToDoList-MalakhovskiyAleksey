@@ -1,7 +1,5 @@
 import { ActivatedRouteSnapshot, CanDeactivateFn, RouterStateSnapshot } from '@angular/router';
-import { ToDoListItem } from '../components/to-do-list-item/to-do-list-item';
-import { Observable } from 'rxjs';
-import { ToDoList } from '../components/to-do-list/to-do-list';
+import { EMPTY, Observable } from 'rxjs';
 import { ToDoItemView } from '../components/to-do-item-view/to-do-item-view';
 
 export const canDeactivateItemViewGuard: CanDeactivateFn<ToDoItemView> = (
@@ -11,7 +9,7 @@ export const canDeactivateItemViewGuard: CanDeactivateFn<ToDoItemView> = (
   nextState : RouterStateSnapshot
 ) : Observable<boolean> | boolean  => {
   
-  component.description = ""
+  //component.curToDo = EMPTY
   
   return true;
 };

@@ -7,19 +7,13 @@ import { ToastService } from '../../services/toast-service';
   templateUrl: './toasts-component.html',
   styleUrl: './toasts-component.css'
 })
-export class ToastsComponent implements OnInit {
+export class ToastsComponent {
 
-  toastService : ToastService = inject ( ToastService )
+  toastService = inject ( ToastService )
 
-  messageList : string[] = this.toastService.getList().reverse()
+  messageList  = this.toastService.getList().reverse()
 
-  showTime : number = 5000
-
-  @Input() display : string = ""
-
-  ngOnInit(): void {
-    setTimeout(() => this.display = 'none', this.showTime)
-  }
+  @Input() display = ""
 
   
 }
