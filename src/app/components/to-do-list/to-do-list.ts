@@ -1,42 +1,47 @@
-import { Component, inject, OnInit, QueryList, Renderer2, ViewChildren } from '@angular/core'
+import { Component, DestroyRef, inject, OnDestroy, OnInit, QueryList, Renderer2, ViewChildren } from '@angular/core'
+import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router'
 import { FormsModule } from '@angular/forms'
 
 import { ToDoListItem } from '../to-do-list-item/to-do-list-item'
-import { ShowIf } from '../../directives'
 import { ToDo } from '../../entities/toDo'
 import { ToDoListService } from '../../services/to-do-list-service'
 import { ToastsComponent } from "../toasts-component/toasts-component"
 import { ToastService } from '../../services/toast-service'
 import { ToDoStatus } from '../../const/to-do-status'
 import { TodoCreateItem } from '../todo-create-item/todo-create-item'
-import { concatMap, of } from 'rxjs'
+import { concatMap, Subject, takeUntil, timer } from 'rxjs'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 
 @Component({
   selector: 'app-to-do-list',
-  imports: [FormsModule, ToDoListItem, ShowIf, ToastsComponent, TodoCreateItem],
+  imports: [RouterOutlet,RouterLink,RouterLinkActive, FormsModule, ToDoListItem, ToastsComponent, TodoCreateItem],
   templateUrl: './to-do-list.html',
   styleUrl: './to-do-list.css'
 })
-export class ToDoList implements OnInit {
+export class ToDoList implements OnInit, OnDestroy {
 
-  toDoListService : ToDoListService = inject ( ToDoListService )
-  toastService : ToastService = inject ( ToastService )
+  private componentIsDestroyed$ = new Subject<boolean>()
+  private toDoListService = inject ( ToDoListService )
+  private toastService = inject ( ToastService )
+  private destroyRef = inject(DestroyRef)
 
   curToDoList : ToDo [] = []
   
-  newToDo: string = ""
-  disabled: boolean = this.newToDo.trim().length == 0
-  opacity: number = this.newToDo.trim().length == 0 ? 0.5 : 1.0
+  private newToDo = ""
+  private disabled = this.newToDo.trim().length == 0
+  private opacity = this.newToDo.trim().length == 0 ? 0.5 : 1.0
 
-  isLoading: boolean = true
-  selectedItemId : number | null = null
+  isLoading = true
   
-  displayToasts : string = "none"
-  curToolTip : string = ""
+  displayToasts = "none"
   fl : string | null = null
 
-  @ViewChildren(ToDoListItem) toDoListItems!: QueryList<ToDoListItem>;
+  @ViewChildren(ToDoListItem) childComponents!: QueryList<ToDoListItem>;
 
+  private readonly router = inject(Router)
+
+  private timer = timer ( 5000 ).pipe ( takeUntil(this.componentIsDestroyed$) )
+  
   constructor ( private renderer: Renderer2 ) {}
   
   changeValue(): void {
@@ -49,6 +54,11 @@ export class ToDoList implements OnInit {
     this.toDoListService.getList().subscribe ( toDoList => this.curToDoList = toDoList )
   }
 
+  ngOnDestroy() {
+    this.componentIsDestroyed$.next(true);
+    this.componentIsDestroyed$.complete();
+  }
+
   addToDo( toDo : ToDo ): void {
 
     this.toDoListService.add ( toDo.text, toDo.description ).pipe(
@@ -56,7 +66,8 @@ export class ToDoList implements OnInit {
         this.toastService.addMesssage ( "added: " + newToDo.text )
         this.showToast()
         return this.toDoListService.getList()
-      })
+      }),
+      takeUntilDestroyed ( this.destroyRef )
     ).subscribe ( toDoList => this.curToDoList = toDoList )
 
   }
@@ -71,35 +82,15 @@ export class ToDoList implements OnInit {
         }
         this.toastService.addMesssage ( "deleted: " + deletedToDo.text )
         this.showToast()
-        if  ( deletedToDo.id == this.selectedItemId ) {
-          this.curToolTip = ""
-          this.selectedItemId = 0
-        }
+        
         return this.toDoListService.getList()
-      })
-    ).subscribe ( toDoList => this.curToDoList = toDoList )   
+      }),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe ( (toDoList) => {
+      this.router.navigate(["tasks"])
+      this.curToDoList = toDoList
+     })   
     
-  }
-
-  selectToDo(id: number): void {
-
-    this.toDoListItems.filter(toDoItem => toDoItem.getId() !== id && toDoItem.getId() === this.selectedItemId ).forEach ( toDoItem => toDoItem.showItemToDo() )
-    this.selectedItemId = id
-    this.toDoListService.getList().pipe(
-      concatMap ( toDoList =>  {
-        let index = toDoList.findIndex(item => item.id === this.selectedItemId)
-        return of(toDoList[index].description)
-      })
-    ).subscribe ( (description : string) => { this.curToolTip = description} )
-    
-  } 
-
-  public  showToolTip() : boolean {
-    return this.selectedItemId != null
-  }
-
-  isSelected ( id : number ) : boolean {
-    return id == this.selectedItemId
   }
 
   changeToDo (id: number) : void {
@@ -110,7 +101,8 @@ export class ToDoList implements OnInit {
         this.toastService.addMesssage ( "changed: " + updatedToDo.text )
         this.showToast()
         return this.toDoListService.getList()
-      }) 
+      }),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe ( toDoList => this.curToDoList = toDoList )
 
   }
@@ -127,14 +119,23 @@ export class ToDoList implements OnInit {
         this.toastService.addMesssage ( "changed status: " + updatedToDo.status )
         this.showToast()
         return this.toDoListService.getList()
-      })
+      }),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe ( toDoList => this.curToDoList = toDoList )
 
   }
 
+  onRouterLinkActive (id : number, event: any)  {
+    if  ( ! event )  {
+      this.childComponents.toArray()
+        .filter ( el => el.getId() === id )
+        .forEach ( el => el.showItemToDo() )
+    }
+  }
+
   showToast() : void {
     this.displayToasts = ""
-    setTimeout(() => this.displayToasts = 'none', 3000)
+    this.timer.subscribe ( () => this.displayToasts = 'none' )
   }
 
   filter ( toDo : ToDo ) : boolean {

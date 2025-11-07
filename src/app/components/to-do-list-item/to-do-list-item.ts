@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, inject  } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, signal, OnInit, computed  } from '@angular/core';
 import { FormsModule } from '@angular/forms'
 
 import { Highlight, TextTitle } from '../../directives';
@@ -15,42 +15,34 @@ import { ToDoStatus } from '../../const/to-do-status';
 })
 export class ToDoListItem {
 
-  toDoListService : ToDoListService = inject ( ToDoListService )
+  toDoListService  = inject ( ToDoListService )
 
   @Input({ required: true }) toDo = new ToDo ( 0, "", "", ToDoStatus.inProgress )
 
   @Output() deleteItemEvent = new EventEmitter<number>()
-  @Output() selectItemEvent = new EventEmitter<number>()
   @Output() changedItemEvent = new EventEmitter<number>()
   @Output() changedItemStatusEvent = new EventEmitter<number>()
 
-  displayShow : string = ""
-  displayChange : string = "none"
+  displayShow = signal ( "" )
+  displayChange = computed (() => this.displayShow() == "" ? "none" : "")
 
-  completed : ToDoStatus = ToDoStatus.completed
-
+  completed = ToDoStatus.completed
+  
   deleteItemToDo(id: number): void {
     this.deleteItemEvent.emit(id)
   }
 
-  selectItemToDo(id: number): void {
-    this.selectItemEvent.emit(id)
-  }
-
   showItemToDo ()  {
-    this.displayShow = ""
-    this.displayChange = "none"
+    this.displayShow.set ( "" )
   }
 
   changeItemToDo () : void {
-    this.displayShow = "none"
-    this.displayChange = ""
+    this.displayShow.set ( "none" )
   }
 
   saveItemToDo () : void {
     this.showItemToDo() 
     this.changedItemEvent.emit(this.toDo.id)
-    this.selectItemToDo (this.toDo.id)
   }
 
   changeStatus(id: number)  {
