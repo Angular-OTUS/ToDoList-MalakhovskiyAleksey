@@ -2,12 +2,12 @@
     <img src="gs-animated.gif" alt="loading ...">
 }
 @else {
-    <h1>ToDo List</h1>
+    <h2>Backlog</h2>
 
     <select [(ngModel)]="fl">
-        <option [ngValue]="null">ALL</option>
-        <option value="InProgress">in progress</option>
-        <option value="Completed">completed</option>
+        @for ( toDoStatus of toDoStatusList; track toDoStatus.id )  {
+            <option [ngValue]="toDoStatus.id">{{ toDoStatus.description}}</option>    
+        }
     </select>
     <div class="list-container">
         
@@ -22,7 +22,7 @@
                         <app-to-do-list-item [toDo]="toDoItem"
                                             (deleteItemEvent)="deleteToDo($event)"
                                             (changedItemEvent)="changeToDo($event)"
-                                            (changedItemStatusEvent)="changeToDoStatus($event)"    
+                                            (changedItemStatusEvent)="changeToDoStatus(toDoItem.id,$event)"    
                                             
                         ></app-to-do-list-item>
                     </div>

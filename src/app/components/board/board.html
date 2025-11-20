@@ -1,0 +1,24 @@
+<h2>Board</h2>
+
+<table style="border: 1px solid black;border-radius: 5px;">
+    <thead>
+        <tr >
+            @for ( toDoStatus of toDoStatusList; track toDoStatus.id ) {
+                @if ( toDoStatus.id != "all" ) {
+                    <th style="padding: 10px;border-bottom: 1px solid;">
+                        {{ toDoStatus.description }} ({{ getToDoQuan(toDoStatus.id) }})
+                    </th>
+                }
+            }
+        </tr>
+        @for (toDoItem of curToDoList; track toDoItem.id; let i = $index) {
+            <tr>
+                @for ( toDoStatus of toDoStatusList; track toDoStatus.id ) {
+                    @if ( toDoStatus.id != "all" ) {
+                        <td style="text-align: center;">{{ getToDoDescription(toDoStatus.id,i) }}</td>
+                    }
+                }   
+            </tr>
+        }
+    </thead>
+</table>

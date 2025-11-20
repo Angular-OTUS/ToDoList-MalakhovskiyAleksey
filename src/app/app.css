@@ -1,0 +1,15 @@
+.menu-container {
+  display: grid;
+  grid-template-columns: 10% repeat(9, 1fr);
+	gap: 2px;
+  grid-template-rows: 10% repeat(9, 1fr);
+  align-items: start;
+  align-self: first baseline;
+}
+
+.content {
+  
+  grid-column: span 9;
+  grid-row: span 9;
+  
+}

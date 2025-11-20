@@ -1,6 +1,7 @@
 import { Routes  } from '@angular/router';
 import { canDeactivateItemViewGuard } from './guards/can-deactivate-item-view-guard';
 import { canDeactivateItemGuard } from './guards/can-deactivate-item-guard';
+import { ToDoList } from './components/to-do-list/to-do-list';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'tasks', pathMatch: 'full' },
@@ -14,6 +15,9 @@ export const routes: Routes = [
          }
       ]
       
+    }, 
+    { path: 'board',
+      loadComponent: () => import('./components/board/board').then((c) => c.Board),  
     },
     { path: '**', redirectTo: 'tasks', pathMatch: 'full' },
     

@@ -1,14 +1,16 @@
 import { inject, Injectable, OnInit } from '@angular/core';
 import { ToDo } from '../entities/toDo';
-import { ToDoStatus } from '../const/to-do-status';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment'
 import { concatMap, Observable } from 'rxjs';
+import { ToDoStatusService } from './to-do-status-service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ToDoListService {
+
+  toDoStatusService = inject ( ToDoStatusService )
 
   private  readonly http = inject ( HttpClient )
   
@@ -34,7 +36,7 @@ export class ToDoListService {
               prev.id > current.id ? prev : current
             ).id + 1
         }
-        let newToDo : ToDo = new ToDo ( maxId, text, description, ToDoStatus.inProgress )
+        let newToDo = new ToDo ( maxId, text, description, this.toDoStatusService.created() )
         return this.http.post<ToDo> ( environment.apiUrl, newToDo )
       })
     )

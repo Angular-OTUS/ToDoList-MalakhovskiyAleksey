@@ -5,8 +5,15 @@
         (dblclick)="changeItemToDo()"
         [style.display]="displayShow()"
     >
-        <input type="checkbox" [checked] = "toDo.status == completed" (click)="changeStatus(toDo.id)">
-        {{ toDo.text }}
+        <!-- <input type="checkbox" [checked] = "toDo.status == completed" (click)="changeStatus(toDo.id)"> -->
+        <div style="display: inline;">
+            <select (change)="changeStatus()" [(ngModel)]="toDo.status.id">
+                @for ( toDoStatus of toDoStatusList; track toDoStatus.id )  {
+                    <option [ngValue]="toDoStatus.id" [selected] = "toDo.status.id === toDoStatus.id" >{{ toDoStatus.description}}</option>
+                }   
+            </select>
+        </div>
+        <div style="display: inline;padding-left: 10px;">{{ toDo.text }}</div>
     </div>
     <app-button-component [buttonTitle]="'Delete'"
                           [buttonClasses]="'button button-delete'"
