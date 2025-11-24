@@ -6,15 +6,7 @@ import { ToastsComponent } from '../components/toasts-component/toasts-component
 })
 export class ToastService {
 
-  messageList : string[] = [
-    /*
-    "message 1",
-    "message 2",
-    "message 3",
-    "message 4",
-    "message 5",
-    */
-  ]
+  messageList : string[] = []
 
   public  getList() : string[] {
     return this.messageList

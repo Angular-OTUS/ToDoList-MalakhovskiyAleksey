@@ -1,33 +1,33 @@
 <li appHighlight>
     
     <div 
-        appTextTitle [text]="toDo.description"
+        appTextTitle [text]="toDo().description"
         (dblclick)="changeItemToDo()"
         [style.display]="displayShow()"
     >
         <!-- <input type="checkbox" [checked] = "toDo.status == completed" (click)="changeStatus(toDo.id)"> -->
         <div style="display: inline;">
-            <select (change)="changeStatus()" [(ngModel)]="toDo.status.id">
+            <select (change)="changeStatus()" [(ngModel)]="toDo().status.id">
                 @for ( toDoStatus of toDoStatusList; track toDoStatus.id )  {
-                    <option [ngValue]="toDoStatus.id" [selected] = "toDo.status.id === toDoStatus.id" >{{ toDoStatus.description}}</option>
+                    <option [ngValue]="toDoStatus.id" [selected] = "toDo().status.id === toDoStatus.id" >{{ toDoStatus.description}}</option>
                 }   
             </select>
         </div>
-        <div style="display: inline;padding-left: 10px;">{{ toDo.text }}</div>
+        <div style="display: inline;padding-left: 10px;">{{ toDo().text }}</div>
     </div>
     <app-button-component [buttonTitle]="'Delete'"
                           [buttonClasses]="'button button-delete'"
-                          (actionEvent)="deleteItemToDo(toDo.id)"
+                          (actionEvent)="deleteItemToDo(toDo().id)"
                           [style.display]="displayShow()"
-                          appTextTitle [text]="'delete ' + toDo.text"
-                          [id]="'forDeleteID-' + toDo.id"
+                          appTextTitle [text]="'delete ' + toDo().text"
+                          [id]="'forDeleteID-' + toDo().id"
     ></app-button-component>
     
     <input
         type="text"
         class="todo-change"
         [style.display]="displayChange()"
-        [(ngModel)]="toDo.text"
+        [(ngModel)]="toDo().text"
     /> 
     <app-button-component [buttonTitle]="'Save'"
                           [buttonClasses]="'button button-save'"

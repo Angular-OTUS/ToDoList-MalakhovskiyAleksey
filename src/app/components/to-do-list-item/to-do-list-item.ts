@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, inject, signal, OnInit, computed  } from '@angular/core';
+import { Component, inject, signal, computed, input, output  } from '@angular/core';
 import { FormsModule } from '@angular/forms'
 
 import { Highlight, TextTitle } from '../../directives';
@@ -19,11 +19,11 @@ export class ToDoListItem {
   toDoListService   = inject ( ToDoListService )
   toDoStatusService = inject ( ToDoStatusService )
 
-  @Input({ required: true }) toDo = new ToDo ( 0, "", "", new ToDoStatus("","") )
+  toDo = input ( new ToDo ( 0, "", "", new ToDoStatus("","") ) )
 
-  @Output() deleteItemEvent = new EventEmitter<number>()
-  @Output() changedItemEvent = new EventEmitter<number>()
-  @Output() changedItemStatusEvent = new EventEmitter<string>()
+  deleteItemEvent = output<number>()
+  changedItemEvent = output<number>()
+  changedItemStatusEvent = output<string>()
 
   displayShow = signal ( "" )
   displayChange = computed (() => this.displayShow() == "" ? "none" : "")
@@ -45,14 +45,14 @@ export class ToDoListItem {
 
   saveItemToDo () : void {
     this.showItemToDo() 
-    this.changedItemEvent.emit(this.toDo.id)
+    this.changedItemEvent.emit(this.toDo().id)
   }
 
   changeStatus()  {
-    this.changedItemStatusEvent.emit(this.toDo.status.id)
+    this.changedItemStatusEvent.emit(this.toDo().status.id)
   }
 
   getId () : number {
-    return this.toDo.id
+    return this.toDo().id
   }
 }

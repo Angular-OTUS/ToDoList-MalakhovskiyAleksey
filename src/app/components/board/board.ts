@@ -1,8 +1,9 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { ToDoStatusService } from '../../services/to-do-status-service';
 import { ToDoStatus } from '../../entities/to-do-status';
 import { ToDo } from '../../entities/toDo';
 import { ToDoListService } from '../../services/to-do-list-service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-board',
@@ -14,12 +15,16 @@ export class Board implements OnInit {
 
   private toDoStatusService = inject(ToDoStatusService)
   private toDoListService = inject(ToDoListService)
+  private destroyRef = inject(DestroyRef)
   toDoStatusList: ToDoStatus[] = this.toDoStatusService.list()
   curToDoList: ToDo[] = []
   curToDoMap : Map<string,ToDo[]> = new Map<string,ToDo[]>()
 
   ngOnInit() {
-    this.toDoListService.getList().subscribe ( 
+    this.toDoListService.getList().pipe (
+      takeUntilDestroyed ( this.destroyRef )
+    )
+        .subscribe ( 
       toDoList => {
         this.curToDoList = toDoList
         for ( let i = 0; i < this.toDoStatusList.length; i++ )  {
