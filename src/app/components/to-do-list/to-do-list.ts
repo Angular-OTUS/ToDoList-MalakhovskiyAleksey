@@ -7,10 +7,11 @@ import { ToDo } from '../../entities/toDo'
 import { ToDoListService } from '../../services/to-do-list-service'
 import { ToastsComponent } from "../toasts-component/toasts-component"
 import { ToastService } from '../../services/toast-service'
-import { ToDoStatus } from '../../const/to-do-status'
 import { TodoCreateItem } from '../todo-create-item/todo-create-item'
 import { concatMap, Subject, takeUntil, timer } from 'rxjs'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { ToDoStatusService } from '../../services/to-do-status-service'
+import { ToDoStatus } from '../../entities/to-do-status'
 
 @Component({
   selector: 'app-to-do-list',
@@ -24,6 +25,7 @@ export class ToDoList implements OnInit, OnDestroy {
   private toDoListService = inject ( ToDoListService )
   private toastService = inject ( ToastService )
   private destroyRef = inject(DestroyRef)
+  private  toDoStatusService = inject ( ToDoStatusService )
 
   curToDoList : ToDo [] = []
   
@@ -34,13 +36,15 @@ export class ToDoList implements OnInit, OnDestroy {
   isLoading = true
   
   displayToasts = "none"
-  fl : string | null = null
+  fl : string = this.toDoStatusService.all().id
 
   @ViewChildren(ToDoListItem) childComponents!: QueryList<ToDoListItem>;
 
   private readonly router = inject(Router)
 
   private timer = timer ( 5000 ).pipe ( takeUntil(this.componentIsDestroyed$) )
+
+  toDoStatusList : ToDoStatus[] = this.toDoStatusService.list()
   
   constructor ( private renderer: Renderer2 ) {}
   
@@ -107,22 +111,24 @@ export class ToDoList implements OnInit, OnDestroy {
 
   }
 
-  changeToDoStatus (id: number) : void {
+  changeToDoStatus (id: number, statusID : string) : void {
+    
     
     this.toDoListService.read ( id ).pipe ( 
       concatMap ( updatedToDo  => {
-        if  ( updatedToDo.status == ToDoStatus.completed )  updatedToDo.status = ToDoStatus.inProgress
-        else updatedToDo.status = ToDoStatus.completed
+        let s = this.toDoStatusService.list().find ( status => status.id === statusID )
+        if  ( s != undefined ) updatedToDo.status = s
+
         return this.toDoListService.update ( updatedToDo )
       }),
       concatMap (  updatedToDo => {
-        this.toastService.addMesssage ( "changed status: " + updatedToDo.status )
+        this.toastService.addMesssage ( "changed status: " + updatedToDo.status.description )
         this.showToast()
         return this.toDoListService.getList()
       }),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe ( toDoList => this.curToDoList = toDoList )
-
+  
   }
 
   onRouterLinkActive (id : number, event: any)  {
@@ -140,7 +146,7 @@ export class ToDoList implements OnInit, OnDestroy {
 
   filter ( toDo : ToDo ) : boolean {
 
-    let ret : boolean =  this.fl === null || this.fl === toDo.status.toString()
+    let ret : boolean =  this.fl === this.toDoStatusService.all().id || this.fl === toDo.status.id
     
     return ret;
   }

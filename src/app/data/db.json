@@ -4,19 +4,28 @@
             "id": 1,
             "text": "Buy a new gaming laptop",
             "description": "tooltip 1",
-            "status": "InProgess"
+            "status": {
+                "id": "InProgess",
+                "description": "in progess"
+            }
         },
         {
             "id": 2,
             "text": "Complete previos task",
             "description": "tooltip 2",
-            "status": "Completed"
+            "status": {
+                "id": "Completed",
+                "description": "completed"
+            }
         },
         {
             "id": 3,
             "text": "Create some angular app",
             "description": "tooltip 3",
-            "status": "Completed"
+            "status": {
+                "id": "Completed",
+                "description": "completed"
+            }
         }
     ]
 }

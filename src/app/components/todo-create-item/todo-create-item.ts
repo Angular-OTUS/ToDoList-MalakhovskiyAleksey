@@ -1,9 +1,9 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms'
 
 import { TextTitle } from '../../directives'
 import { ToDo } from '../../entities/toDo';
-import { ToDoStatus } from '../../const/to-do-status';
+import { ToDoStatusService } from '../../services/to-do-status-service';
 
 @Component({
   selector: 'app-todo-create-item',
@@ -12,6 +12,8 @@ import { ToDoStatus } from '../../const/to-do-status';
   styleUrl: './todo-create-item.css'
 })
 export class TodoCreateItem {
+
+  toDoStatusService = inject ( ToDoStatusService )
 
    @Output() addItemEvent = new EventEmitter<ToDo>()
 
@@ -26,6 +28,12 @@ export class TodoCreateItem {
   }
  
   onSubmit(  createToDoItemForm : any ) : void {
-    this.addItemEvent.emit ( new ToDo ( 0, createToDoItemForm.controls['newToDo'].value, createToDoItemForm.controls['newToolTip'].value, ToDoStatus.inProgress ) )
+    let newToDo = new ToDo (
+      0,
+      createToDoItemForm.controls['newToDo'].value,
+      createToDoItemForm.controls['newToolTip'].value,
+      this.toDoStatusService.created()
+    )
+    this.addItemEvent.emit ( newToDo )
   }
 }

@@ -1,4 +1,6 @@
-import { ToDoStatus } from "../const/to-do-status";
+import { ToDoStatus } from "./to-do-status";
+
+
 
 export class ToDo {
 

@@ -1,11 +1,12 @@
-import { Component, Input, Output, EventEmitter, inject, signal, OnInit, computed  } from '@angular/core';
+import { Component, inject, signal, computed, input, output  } from '@angular/core';
 import { FormsModule } from '@angular/forms'
 
 import { Highlight, TextTitle } from '../../directives';
 import { ToDo } from '../../entities/toDo';
 import { ToDoListService } from '../../services/to-do-list-service';
 import { ButtonComponent } from '../../components/button-component/button-component'
-import { ToDoStatus } from '../../const/to-do-status';
+import { ToDoStatus } from '../../entities/to-do-status';
+import { ToDoStatusService } from '../../services/to-do-status-service';
 
 @Component({
   selector: 'app-to-do-list-item',
@@ -15,18 +16,20 @@ import { ToDoStatus } from '../../const/to-do-status';
 })
 export class ToDoListItem {
 
-  toDoListService  = inject ( ToDoListService )
+  toDoListService   = inject ( ToDoListService )
+  toDoStatusService = inject ( ToDoStatusService )
 
-  @Input({ required: true }) toDo = new ToDo ( 0, "", "", ToDoStatus.inProgress )
+  toDo = input ( new ToDo ( 0, "", "", new ToDoStatus("","") ) )
 
-  @Output() deleteItemEvent = new EventEmitter<number>()
-  @Output() changedItemEvent = new EventEmitter<number>()
-  @Output() changedItemStatusEvent = new EventEmitter<number>()
+  deleteItemEvent = output<number>()
+  changedItemEvent = output<number>()
+  changedItemStatusEvent = output<string>()
 
   displayShow = signal ( "" )
   displayChange = computed (() => this.displayShow() == "" ? "none" : "")
 
-  completed = ToDoStatus.completed
+  toDoStatusList : ToDoStatus[] = this.toDoStatusService.list().filter ( status => status.id != "all" ) 
+  completed = this.toDoStatusService.completed()
   
   deleteItemToDo(id: number): void {
     this.deleteItemEvent.emit(id)
@@ -42,14 +45,14 @@ export class ToDoListItem {
 
   saveItemToDo () : void {
     this.showItemToDo() 
-    this.changedItemEvent.emit(this.toDo.id)
+    this.changedItemEvent.emit(this.toDo().id)
   }
 
-  changeStatus(id: number)  {
-    this.changedItemStatusEvent.emit(id)
+  changeStatus()  {
+    this.changedItemStatusEvent.emit(this.toDo().status.id)
   }
 
   getId () : number {
-    return this.toDo.id
+    return this.toDo().id
   }
 }
