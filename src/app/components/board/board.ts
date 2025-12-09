@@ -23,8 +23,7 @@ export class Board implements OnInit {
   ngOnInit() {
     this.toDoListService.getList().pipe (
       takeUntilDestroyed ( this.destroyRef )
-    )
-        .subscribe ( 
+    ).subscribe ( 
       toDoList => {
         this.curToDoList = toDoList
         for ( let i = 0; i < this.toDoStatusList.length; i++ )  {

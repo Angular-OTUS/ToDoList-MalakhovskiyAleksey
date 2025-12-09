@@ -22,7 +22,7 @@ export class ToDoListItem {
   toDo = input ( new ToDo ( 0, "", "", new ToDoStatus("","") ) )
 
   deleteItemEvent = output<number>()
-  changedItemEvent = output<number>()
+  changedItemEvent = output<ToDo>()
   changedItemStatusEvent = output<string>()
 
   displayShow = signal ( "" )
@@ -45,7 +45,7 @@ export class ToDoListItem {
 
   saveItemToDo () : void {
     this.showItemToDo() 
-    this.changedItemEvent.emit(this.toDo().id)
+    this.changedItemEvent.emit(this.toDo())
   }
 
   changeStatus()  {

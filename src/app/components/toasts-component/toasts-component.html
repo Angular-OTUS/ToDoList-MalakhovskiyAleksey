@@ -5,12 +5,12 @@
         </tr>
     </thead>
     <tbody>
-        @for (message of messageList; track message; let i = $index) {
-            @if ( i == 0 )  {
-                <tr>
-                    <td style="text-align: left;padding-left: 2px;">{{ message }}</td>
-                </tr>
-            }
+
+        @for (message of messageList$ | async; track message) {
+            <tr>
+                <td style="text-align: left;padding-left: 2px;">{{ message }}</td>
+            </tr>
         }
+
     </tbody>
 </table>

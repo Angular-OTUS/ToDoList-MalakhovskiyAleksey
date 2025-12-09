@@ -21,9 +21,9 @@ export class ToDoItemView implements OnInit {
   private readonly route = inject(ActivatedRoute)
 
   ngOnInit(): void {
-    this.curToDo = this.route.params.pipe (
-      switchMap ( par => this.toDoListService.read ( par["toDoItemId"] ) )
-    )
+    // this.curToDo = this.route.params.pipe (
+    //   switchMap ( par => this.toDoListService.read ( par["toDoItemId"] ) )
+    // )
 
   }
 

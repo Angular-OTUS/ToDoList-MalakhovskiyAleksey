@@ -1,4 +1,4 @@
-import { inject, Injectable, OnInit } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { ToDo } from '../entities/toDo';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment'
@@ -13,8 +13,6 @@ export class ToDoListService {
   toDoStatusService = inject ( ToDoStatusService )
 
   private  readonly http = inject ( HttpClient )
-  
-  public toDoList : ToDo[] = []
   
   public  getList () : Observable<ToDo []> {
     return this.http.get<ToDo []>( environment.apiUrl )
