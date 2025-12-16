@@ -3,7 +3,7 @@ import { ToDoStatusService } from '../../services/to-do-status-service';
 import { ToDoStatus } from '../../entities/to-do-status';
 import { ToDo } from '../../entities/toDo';
 import { ToDoListService } from '../../services/to-do-list-service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-board',
@@ -20,20 +20,24 @@ export class Board implements OnInit {
   curToDoList: ToDo[] = []
   curToDoMap : Map<string,ToDo[]> = new Map<string,ToDo[]>()
 
+  fl : string = this.toDoListService.fl()
+  toDoListData$ = toObservable(this.toDoListService.toDoSignal) 
+  
   ngOnInit() {
-    this.toDoListService.getList().pipe (
+    this.toDoListService.setFilter ( this.toDoStatusService.all().id )
+    this.toDoListData$.pipe (
       takeUntilDestroyed ( this.destroyRef )
-    ).subscribe ( 
+    ).subscribe (
       toDoList => {
-        this.curToDoList = toDoList
-        for ( let i = 0; i < this.toDoStatusList.length; i++ )  {
-          this.curToDoMap.set ( this.toDoStatusList[i].id, [] )
-        }
-        for ( let i = 0; i < this.curToDoList.length; i++ )  {
-          let list = this.curToDoMap.get(this.curToDoList[i].status.id)
-          list?.push ( this.curToDoList[i] )
-        }
-      }
+          this.curToDoList = toDoList
+          for ( let i = 0; i < this.toDoStatusList.length; i++ )  {
+            this.curToDoMap.set ( this.toDoStatusList[i].id, [] ) 
+          }
+          for ( let i = 0; i < this.curToDoList.length; i++ )  {
+              let list = this.curToDoMap.get(this.curToDoList[i].status.id)
+              list?.push ( this.curToDoList[i] )
+          }
+      }  
     )
   }
 

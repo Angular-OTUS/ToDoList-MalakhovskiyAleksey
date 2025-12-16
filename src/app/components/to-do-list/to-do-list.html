@@ -4,11 +4,15 @@
 @else {
     <h2>Backlog</h2>
 
-    <select [(ngModel)]="fl" (change)="onChange()">
-        @for ( toDoStatus of toDoStatusList; track toDoStatus.id )  {
-            <option [ngValue]="toDoStatus.id">{{ toDoStatus.description}}</option>    
-        }
-    </select>
+    <div>
+        <div style="display: inline;">
+            <select [(ngModel)]="fl" (ngModelChange)="onFlChange($event)">
+                @for ( toDoStatus of toDoStatusList; track toDoStatus.id )  {
+                    <option [value]="toDoStatus.id">{{ toDoStatus.description}}</option>    
+                }
+            </select>
+        </div>
+    </div>
 
     <div class="list-container">
             @if ( ! reloading )  {

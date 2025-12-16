@@ -1,5 +1,5 @@
-import { ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, OnDestroy, OnInit, QueryList, Renderer2, ViewChildren } from '@angular/core'
-import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router'
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnDestroy, OnInit, QueryList, Renderer2, signal, ViewChildren } from '@angular/core'
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router'
 import { FormsModule } from '@angular/forms'
 
 import { ToDoListItem } from '../to-do-list-item/to-do-list-item'
@@ -8,11 +8,12 @@ import { ToDoListService } from '../../services/to-do-list-service'
 import { ToastsComponent } from "../toasts-component/toasts-component"
 import { ToastService } from '../../services/toast-service'
 import { TodoCreateItem } from '../todo-create-item/todo-create-item'
-import { concatMap, map, Subject, takeUntil, timer } from 'rxjs'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { concatMap, Subject, takeUntil, timer } from 'rxjs'
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
 import { ToDoStatusService } from '../../services/to-do-status-service'
 import { ToDoStatus } from '../../entities/to-do-status'
 import { AsyncPipe } from '@angular/common'
+import { __setFunctionName } from 'tslib'
 
 @Component({
   selector: 'app-to-do-list',
@@ -34,12 +35,8 @@ export class ToDoList implements OnInit, OnDestroy {
   private destroyRef = inject(DestroyRef)
   private toDoStatusService = inject(ToDoStatusService)
 
-  fl: string = this.toDoStatusService.all().id
-  toDoListData$ = this.toDoListService.getList().pipe(
-    map(toDos => toDos.filter(toDo => this.fl === this.toDoStatusService.all().id || this.fl === toDo.status.id))
-  )
-  appRef = inject(ApplicationRef)
-  cdRef = inject(ChangeDetectorRef)
+  fl : string = this.toDoListService.fl()
+  toDoListData$ = toObservable(this.toDoListService.toDoSignal) 
   
   private newToDo = ""
   private disabled = this.newToDo.trim().length == 0
@@ -51,14 +48,17 @@ export class ToDoList implements OnInit, OnDestroy {
 
   @ViewChildren(ToDoListItem) childComponents!: QueryList<ToDoListItem>;
 
-  private readonly router = inject(Router)
-
-  private timer = timer(5000).pipe(takeUntil(this.componentIsDestroyed$))
+  private timeoutId: any
+  private timer = timer(5000)
 
   toDoStatusList: ToDoStatus[] = this.toDoStatusService.list()
   reloading: boolean = false
 
-  constructor(private renderer: Renderer2) { }
+  constructor(private renderer: Renderer2) {}
+
+  onFlChange ( val : string) {
+    this.toDoListService.setFilter ( val )
+  }
 
   changeValue(): void {
     this.disabled = this.newToDo.trim().length == 0
@@ -66,46 +66,42 @@ export class ToDoList implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    setTimeout(() => this.isLoading = false, 500)
-    this.cdRef.markForCheck()
+    this.timeoutId = setTimeout(() => this.isLoading = false, 500)
   }
 
   ngOnDestroy() {
     this.componentIsDestroyed$.next(true);
     this.componentIsDestroyed$.complete();
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+    }
+  }
+
+  showToast(): void {
+    this.displayToasts = ""
+    this.timer.pipe (
+      takeUntil(this.componentIsDestroyed$)
+    ).subscribe(
+      () => this.displayToasts = 'none'
+    )
   }
 
   addToDo(toDo: ToDo): void {
 
-    this.toDoListService.add(toDo.text, toDo.description).pipe(
-      concatMap(newToDo => {
-        this.toastService.addMesssage("added: " + newToDo.text)
-        this.showToast()
-        return this.toDoListData$
-      }),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(() => {
-      this.onChange()
-    })
-
+    this.toDoListService.add(toDo.text, toDo.description, this.showToast.bind(this) )
+    
   }
 
   deleteToDo(id: number): void {
 
-    this.toDoListService.remove(id).pipe(
-      concatMap(deletedToDo => {
-        const placeholders = document.querySelectorAll('#forDeleteID-' + id)
-        for (let i = 0; i < placeholders.length; i++) {
-          this.renderer.removeChild(document, placeholders[i]);
-        }
-        this.toastService.addMesssage("deleted: " + deletedToDo.text)
-        this.showToast()
-
-        return this.toDoListData$
-      }),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(() => {
-      this.onChange()
+    this.toDoListService.read(id).subscribe ( deletedToDo => {
+      this.toDoListService.remove(id)
+      const placeholders = document.querySelectorAll('#forDeleteID-' + id)
+      for (let i = 0; i < placeholders.length; i++) {
+        this.renderer.removeChild(document, placeholders[i]);
+      }
+      this.toastService.addMesssage("deleted: " + deletedToDo.text)
+      this.showToast()
     })
 
   }
@@ -119,9 +115,7 @@ export class ToDoList implements OnInit, OnDestroy {
         return this.toDoListData$
       }),
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(() => {
-      this.cdRef.detectChanges()
-    })
+    ).subscribe(() => {})
 
   }
 
@@ -152,15 +146,6 @@ export class ToDoList implements OnInit, OnDestroy {
     }
   }
 
-  showToast(): void {
-    this.displayToasts = ""
-    this.timer.subscribe(() => this.displayToasts = 'none')
-  }
+  
 
-  onChange(): void {
-    this.reloading = true
-    this.cdRef.detectChanges()
-    this.reloading = false
-    this.cdRef.detectChanges()
-  }
 }
