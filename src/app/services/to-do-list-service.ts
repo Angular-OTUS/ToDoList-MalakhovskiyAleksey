@@ -2,11 +2,8 @@ import { inject, Injectable, signal } from '@angular/core';
 import { ToDo } from '../entities/toDo';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment'
-import { concatMap, filter, map, Observable } from 'rxjs';
+import { concatMap, filter, map, Observable, of, tap } from 'rxjs';
 import { ToDoStatusService } from './to-do-status-service';
-import { ToastService } from './toast-service';
-
-type ShowFunction = () => void;
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +11,6 @@ type ShowFunction = () => void;
 export class ToDoListService {
 
   toDoStatusService = inject ( ToDoStatusService )
-  private toastService = inject(ToastService)
   private  readonly http = inject ( HttpClient )
 
   public  readonly fl = signal<string>(this.toDoStatusService.all().id)
@@ -40,13 +36,11 @@ export class ToDoListService {
     return this.http.get<ToDo>( environment.apiUrl + "/" + id )
   }
   
-  
   public add (
       text : string,
       description : string,
-      fn : ShowFunction 
-    ) : void  {
-      this.getList().pipe(
+    ) : Observable<ToDo>  {
+      return this.getList().pipe(
         concatMap ( (toDoList : ToDo [] ) => {
           let maxId : number = 1
           if ( toDoList.length ) {
@@ -55,13 +49,10 @@ export class ToDoListService {
             ).id + 1
           }
           let newToDo = new ToDo ( maxId, text, description, this.toDoStatusService.created() )
-          return this.http.post<ToDo []> ( environment.apiUrl, newToDo )
-        })
-      ).subscribe( () => {
-            this.getList().subscribe ( list => this.toDoSignal.set(list) )
-            this.toastService.addMesssage("added: " + text)
-            fn ()
-        })
+          return this.http.post<ToDo> ( environment.apiUrl, newToDo )
+        }),
+        tap ( () => this.getList().subscribe ( list => this.toDoSignal.set(list) ) )
+      )
   }
 
   public remove ( id : number ) : void {
@@ -71,10 +62,6 @@ export class ToDoListService {
 
   public  update ( toDo : ToDo ) : Observable<ToDo> {
     return this.http.put<ToDo> ( environment.apiUrl + "/" + toDo.id, toDo )
-  }
-
-  showToast() : void{
-    alert ( "showToast")
   }
 
 }

@@ -20,7 +20,6 @@ export class Board implements OnInit {
   curToDoList: ToDo[] = []
   curToDoMap : Map<string,ToDo[]> = new Map<string,ToDo[]>()
 
-  fl : string = this.toDoListService.fl()
   toDoListData$ = toObservable(this.toDoListService.toDoSignal) 
   
   ngOnInit() {

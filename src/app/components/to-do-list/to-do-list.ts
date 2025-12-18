@@ -88,7 +88,11 @@ export class ToDoList implements OnInit, OnDestroy {
 
   addToDo(toDo: ToDo): void {
 
-    this.toDoListService.add(toDo.text, toDo.description, this.showToast.bind(this) )
+    this.toDoListService.add(toDo.text, toDo.description )
+    .subscribe ( toDo => {
+        this.toastService.addMesssage("added: " + toDo.text)
+        this.showToast()
+    })
     
   }
 
