@@ -1,8 +1,8 @@
-import { inject, Injectable, OnInit } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { ToDo } from '../entities/toDo';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment'
-import { concatMap, Observable } from 'rxjs';
+import { concatMap, filter, map, Observable, of, tap } from 'rxjs';
 import { ToDoStatusService } from './to-do-status-service';
 
 @Injectable({
@@ -11,40 +11,52 @@ import { ToDoStatusService } from './to-do-status-service';
 export class ToDoListService {
 
   toDoStatusService = inject ( ToDoStatusService )
-
   private  readonly http = inject ( HttpClient )
+
+  public  readonly fl = signal<string>(this.toDoStatusService.all().id)
+  private toDoList : ToDo[] = []
+  public  readonly toDoSignal = signal ( this.toDoList )
+
+  constructor ()  {
+    this.setFilter ( this.fl() )
+  }
   
-  public toDoList : ToDo[] = []
-  
-  public  getList () : Observable<ToDo []> {
-    return this.http.get<ToDo []>( environment.apiUrl )
+  setFilter ( val : string ) : void {
+    this.fl.set ( val )
+    this.getList().subscribe ( list => this.toDoSignal.set(list) )
+  }
+
+  private  getList () : Observable<ToDo []> {
+    return this.http.get<ToDo []>( environment.apiUrl ).pipe (
+      map(toDos => toDos.filter(toDo => this.fl() === this.toDoStatusService.all().id || this.fl() === toDo.status.id))
+    )
   }
 
   public  read ( id : number ) : Observable<ToDo> {
     return this.http.get<ToDo>( environment.apiUrl + "/" + id )
   }
+  
   public add (
       text : string,
       description : string,
     ) : Observable<ToDo>  {
-
-    return this.getList().pipe (
-      concatMap ( (toDoList : ToDo [] ) =>  {
-        let maxId : number = 1
-        if ( toDoList.length ) {
+      return this.getList().pipe(
+        concatMap ( (toDoList : ToDo [] ) => {
+          let maxId : number = 1
+          if ( toDoList.length ) {
             maxId = toDoList.reduce((prev, current) =>
               prev.id > current.id ? prev : current
             ).id + 1
-        }
-        let newToDo = new ToDo ( maxId, text, description, this.toDoStatusService.created() )
-        return this.http.post<ToDo> ( environment.apiUrl, newToDo )
-      })
-    )
-      
+          }
+          let newToDo = new ToDo ( maxId, text, description, this.toDoStatusService.created() )
+          return this.http.post<ToDo> ( environment.apiUrl, newToDo )
+        }),
+        tap ( () => this.getList().subscribe ( list => this.toDoSignal.set(list) ) )
+      )
   }
 
-  public remove ( id : number ) : Observable<ToDo> {
-    return this.http.delete<ToDo> ( environment.apiUrl + "/" + id  )
+  public remove ( id : number ) : void {
+    this.http.delete<ToDo> ( environment.apiUrl + "/" + id  ).subscribe( () => {this.getList().subscribe ( list => this.toDoSignal.set(list) )} )
   
   }
 

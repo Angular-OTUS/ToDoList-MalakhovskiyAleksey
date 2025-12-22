@@ -4,34 +4,40 @@
 @else {
     <h2>Backlog</h2>
 
-    <select [(ngModel)]="fl">
-        @for ( toDoStatus of toDoStatusList; track toDoStatus.id )  {
-            <option [ngValue]="toDoStatus.id">{{ toDoStatus.description}}</option>    
-        }
-    </select>
-    <div class="list-container">
-        
-        <ul class="list">
-            @for (toDoItem of curToDoList; track toDoItem.id) {
-                @if  ( filter(toDoItem) )  {
-                    <div [routerLink]="[toDoItem.id]"
-                         routerLinkActive="selected"
-                         [routerLinkActiveOptions]="{ exact : true }"
-                         (isActiveChange)="onRouterLinkActive(toDoItem.id,$event)"
-                    >
-                        <app-to-do-list-item [toDo]="toDoItem"
-                                            (deleteItemEvent)="deleteToDo($event)"
-                                            (changedItemEvent)="changeToDo($event)"
-                                            (changedItemStatusEvent)="changeToDoStatus(toDoItem.id,$event)"    
-                                            
-                        ></app-to-do-list-item>
-                    </div>
+    <div>
+        <div style="display: inline;">
+            <select [(ngModel)]="fl" (ngModelChange)="onFlChange($event)">
+                @for ( toDoStatus of toDoStatusList; track toDoStatus.id )  {
+                    <option [value]="toDoStatus.id">{{ toDoStatus.description}}</option>    
                 }
-            }
-        </ul>
-        <div style="min-width: 20px;"></div>
-        <router-outlet/>
+            </select>
+        </div>
+    </div>
 
+    <div class="list-container">
+            @if ( ! reloading )  {
+                <ul class="list" >
+                    @for (toDoItem of toDoListData$ | async; track toDoItem.id) {
+                        
+                        <div [routerLink]="[toDoItem.id]"
+                            routerLinkActive="selected"
+                            [routerLinkActiveOptions]="{ exact : true }"
+                            (isActiveChange)="onRouterLinkActive(toDoItem.id,$event)"
+                        >
+                            <app-to-do-list-item [toDo]="toDoItem"
+                                                (deleteItemEvent)="deleteToDo($event)"
+                                                (changedItemEvent)="changeToDo($event)"
+                                                (changedItemStatusEvent)="changeToDoStatus(toDoItem.id,$event)"    
+                                                
+                            ></app-to-do-list-item>
+                        </div>
+                        
+                    }   
+                </ul>
+            }
+            <div style="min-width: 20px;"></div>
+            <router-outlet/>
+        
     </div>
 
     <app-todo-create-item (addItemEvent)="addToDo($event)"></app-todo-create-item>

@@ -1,5 +1,5 @@
-import { Component, DestroyRef, inject, OnDestroy, OnInit, QueryList, Renderer2, ViewChildren } from '@angular/core'
-import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router'
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnDestroy, OnInit, QueryList, Renderer2, signal, ViewChildren } from '@angular/core'
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router'
 import { FormsModule } from '@angular/forms'
 
 import { ToDoListItem } from '../to-do-list-item/to-do-list-item'
@@ -9,145 +9,147 @@ import { ToastsComponent } from "../toasts-component/toasts-component"
 import { ToastService } from '../../services/toast-service'
 import { TodoCreateItem } from '../todo-create-item/todo-create-item'
 import { concatMap, Subject, takeUntil, timer } from 'rxjs'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
 import { ToDoStatusService } from '../../services/to-do-status-service'
 import { ToDoStatus } from '../../entities/to-do-status'
+import { AsyncPipe } from '@angular/common'
+import { __setFunctionName } from 'tslib'
 
 @Component({
   selector: 'app-to-do-list',
-  imports: [RouterOutlet,RouterLink,RouterLinkActive, FormsModule, ToDoListItem, ToastsComponent, TodoCreateItem],
+  imports: [
+    RouterOutlet, RouterLink, RouterLinkActive,
+    AsyncPipe,
+    FormsModule, ToDoListItem, ToastsComponent, TodoCreateItem
+
+  ],
   templateUrl: './to-do-list.html',
-  styleUrl: './to-do-list.css'
+  styleUrl: './to-do-list.css',
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class ToDoList implements OnInit, OnDestroy {
 
   private componentIsDestroyed$ = new Subject<boolean>()
-  private toDoListService = inject ( ToDoListService )
-  private toastService = inject ( ToastService )
+  private toDoListService = inject(ToDoListService)
+  private toastService = inject(ToastService)
   private destroyRef = inject(DestroyRef)
-  private  toDoStatusService = inject ( ToDoStatusService )
+  private toDoStatusService = inject(ToDoStatusService)
 
-  curToDoList : ToDo [] = []
+  fl : string = this.toDoListService.fl()
+  toDoListData$ = toObservable(this.toDoListService.toDoSignal) 
   
   private newToDo = ""
   private disabled = this.newToDo.trim().length == 0
   private opacity = this.newToDo.trim().length == 0 ? 0.5 : 1.0
 
   isLoading = true
-  
+
   displayToasts = "none"
-  fl : string = this.toDoStatusService.all().id
 
   @ViewChildren(ToDoListItem) childComponents!: QueryList<ToDoListItem>;
 
-  private readonly router = inject(Router)
+  private timeoutId: any
+  private timer = timer(5000)
 
-  private timer = timer ( 5000 ).pipe ( takeUntil(this.componentIsDestroyed$) )
+  toDoStatusList: ToDoStatus[] = this.toDoStatusService.list()
+  reloading: boolean = false
 
-  toDoStatusList : ToDoStatus[] = this.toDoStatusService.list()
-  
-  constructor ( private renderer: Renderer2 ) {}
-  
+  constructor(private renderer: Renderer2) {}
+
+  onFlChange ( val : string) {
+    this.toDoListService.setFilter ( val )
+  }
+
   changeValue(): void {
     this.disabled = this.newToDo.trim().length == 0
     this.opacity = this.newToDo.trim().length == 0 ? 0.5 : 1.0
   }
 
   ngOnInit() {
-    setTimeout(() => this.isLoading = false, 500)
-    this.toDoListService.getList().subscribe ( toDoList => this.curToDoList = toDoList )
+    this.timeoutId = setTimeout(() => this.isLoading = false, 500)
   }
 
   ngOnDestroy() {
     this.componentIsDestroyed$.next(true);
     this.componentIsDestroyed$.complete();
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+    }
   }
 
-  addToDo( toDo : ToDo ): void {
+  showToast(): void {
+    this.displayToasts = ""
+    this.timer.pipe (
+      takeUntil(this.componentIsDestroyed$)
+    ).subscribe(
+      () => this.displayToasts = 'none'
+    )
+  }
 
-    this.toDoListService.add ( toDo.text, toDo.description ).pipe(
-      concatMap ( newToDo => {
-        this.toastService.addMesssage ( "added: " + newToDo.text )
+  addToDo(toDo: ToDo): void {
+
+    this.toDoListService.add(toDo.text, toDo.description )
+    .subscribe ( toDo => {
+        this.toastService.addMesssage("added: " + toDo.text)
         this.showToast()
-        return this.toDoListService.getList()
-      }),
-      takeUntilDestroyed ( this.destroyRef )
-    ).subscribe ( toDoList => this.curToDoList = toDoList )
-
+    })
+    
   }
 
   deleteToDo(id: number): void {
 
-    this.toDoListService.remove ( id ).pipe (
-      concatMap ( deletedToDo => {
-        const placeholders = document.querySelectorAll('#forDeleteID-' + id)
-        for ( let i = 0; i < placeholders.length; i++ ) {
-          this.renderer.removeChild ( document, placeholders[i] );
-        }
-        this.toastService.addMesssage ( "deleted: " + deletedToDo.text )
-        this.showToast()
-        
-        return this.toDoListService.getList()
-      }),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe ( (toDoList) => {
-      this.router.navigate(["tasks"])
-      this.curToDoList = toDoList
-     })   
-    
-  }
-
-  changeToDo (id: number) : void {
-
-    let index = this.curToDoList.findIndex(item => item.id === id)
-    this.toDoListService.update ( this.curToDoList[index] ).pipe (
-      concatMap ( updatedToDo => {
-        this.toastService.addMesssage ( "changed: " + updatedToDo.text )
-        this.showToast()
-        return this.toDoListService.getList()
-      }),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe ( toDoList => this.curToDoList = toDoList )
+    this.toDoListService.read(id).subscribe ( deletedToDo => {
+      this.toDoListService.remove(id)
+      const placeholders = document.querySelectorAll('#forDeleteID-' + id)
+      for (let i = 0; i < placeholders.length; i++) {
+        this.renderer.removeChild(document, placeholders[i]);
+      }
+      this.toastService.addMesssage("deleted: " + deletedToDo.text)
+      this.showToast()
+    })
 
   }
 
-  changeToDoStatus (id: number, statusID : string) : void {
-    
-    
-    this.toDoListService.read ( id ).pipe ( 
-      concatMap ( updatedToDo  => {
-        let s = this.toDoStatusService.list().find ( status => status.id === statusID )
-        if  ( s != undefined ) updatedToDo.status = s
+  changeToDo(toDo: ToDo): void {
 
-        return this.toDoListService.update ( updatedToDo )
-      }),
-      concatMap (  updatedToDo => {
-        this.toastService.addMesssage ( "changed status: " + updatedToDo.status.description )
+    this.toDoListService.update(toDo).pipe(
+      concatMap(updatedToDo => {
+        this.toastService.addMesssage("changed: " + updatedToDo.text)
         this.showToast()
-        return this.toDoListService.getList()
+        return this.toDoListData$
       }),
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe ( toDoList => this.curToDoList = toDoList )
-  
+    ).subscribe(() => {})
+
   }
 
-  onRouterLinkActive (id : number, event: any)  {
-    if  ( ! event )  {
+  changeToDoStatus(id: number, statusID: string): void {
+
+    this.toDoListService.read(id).pipe(
+      concatMap(updatedToDo => {
+        let s = this.toDoStatusService.list().find(status => status.id === statusID)
+        if (s != undefined) updatedToDo.status = s
+
+        return this.toDoListService.update(updatedToDo)
+      }),
+      concatMap(updatedToDo => {
+        this.toastService.addMesssage("changed status: " + updatedToDo.status.description)
+        this.showToast()
+        return this.toDoListData$
+      }),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe()
+
+  }
+
+  onRouterLinkActive(id: number, event: any) {
+    if (!event) {
       this.childComponents.toArray()
-        .filter ( el => el.getId() === id )
-        .forEach ( el => el.showItemToDo() )
+        .filter(el => el.getId() === id)
+        .forEach(el => el.showItemToDo())
     }
   }
 
-  showToast() : void {
-    this.displayToasts = ""
-    this.timer.subscribe ( () => this.displayToasts = 'none' )
-  }
+  
 
-  filter ( toDo : ToDo ) : boolean {
-
-    let ret : boolean =  this.fl === this.toDoStatusService.all().id || this.fl === toDo.status.id
-    
-    return ret;
-  }
 }
