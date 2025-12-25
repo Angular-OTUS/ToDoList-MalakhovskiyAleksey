@@ -5,11 +5,10 @@
         (dblclick)="changeItemToDo()"
         [style.display]="displayShow()"
     >
-        <!-- <input type="checkbox" [checked] = "toDo.status == completed" (click)="changeStatus(toDo.id)"> -->
         <div style="display: inline;">
             <select (change)="changeStatus()" [(ngModel)]="toDo().status.id">
                 @for ( toDoStatus of toDoStatusList; track toDoStatus.id )  {
-                    <option [ngValue]="toDoStatus.id" [selected] = "toDo().status.id === toDoStatus.id" >{{ toDoStatus.description}}</option>
+                    <option [ngValue]="toDoStatus.id" [selected] = "toDo().status.id === toDoStatus.id" >{{ toDoStatus.description | transloco }}</option>
                 }   
             </select>
         </div>

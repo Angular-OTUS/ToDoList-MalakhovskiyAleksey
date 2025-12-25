@@ -14,14 +14,15 @@ import { ToDoStatusService } from '../../services/to-do-status-service'
 import { ToDoStatus } from '../../entities/to-do-status'
 import { AsyncPipe } from '@angular/common'
 import { __setFunctionName } from 'tslib'
+import { TranslocoModule } from '@jsverse/transloco'
 
 @Component({
   selector: 'app-to-do-list',
   imports: [
     RouterOutlet, RouterLink, RouterLinkActive,
     AsyncPipe,
-    FormsModule, ToDoListItem, ToastsComponent, TodoCreateItem
-
+    FormsModule, ToDoListItem, ToastsComponent, TodoCreateItem,
+    TranslocoModule
   ],
   templateUrl: './to-do-list.html',
   styleUrl: './to-do-list.css',

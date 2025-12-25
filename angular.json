@@ -15,21 +15,38 @@
           "options": {
             "browser": "src/main.ts",
             "polyfills": [
-              "zone.js"
+              "zone.js",
+              "@angular/localize/init"
             ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public,node_modules/@taiga-ui/icons/src",
-                "output": "assets/taiga-ui/icons"
+                "input": "public"
+              },
+              {
+                "glob": "**/*",
+                "input": "node_modules/@taiga-ui/icons/src"
+              },
+              {
+                "glob": "favicon.ico",
+                "input": "public",
+                "output": "/"
+              },
+              {
+                "glob": "gs-animated.gif",
+                "input": "public",
+                "output": "/"
               }
             ],
             "styles": [
               "src/styles.css",
               "@taiga-ui/core/styles/taiga-ui-theme.less",
-	            "@taiga-ui/core/styles/taiga-ui-fonts.less"
-            ]
+              "@taiga-ui/core/styles/taiga-ui-fonts.less"
+            ],
+            "security": {
+              "autoCsp": false
+            }
           },
           "configurations": {
             "production": {
@@ -75,7 +92,8 @@
           "options": {
             "polyfills": [
               "zone.js",
-              "zone.js/testing"
+              "zone.js/testing",
+              "@angular/localize/init"
             ],
             "tsConfig": "tsconfig.spec.json",
             "assets": [

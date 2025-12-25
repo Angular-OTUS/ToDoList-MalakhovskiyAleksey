@@ -13,3 +13,8 @@
   grid-row: span 9;
   
 }
+
+.selected {
+    background-color: lightgreen;
+    padding: 0px;
+}

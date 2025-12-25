@@ -1,4 +1,4 @@
-<h2>Board</h2>
+<h2>{{ 'Board' | transloco }} </h2>
 
 <table style="border: 1px solid black;border-radius: 5px;">
     <thead>
@@ -6,7 +6,7 @@
             @for ( toDoStatus of toDoStatusList; track toDoStatus.id ) {
                 @if ( toDoStatus.id != "all" ) {
                     <th style="padding: 10px;border-bottom: 1px solid;">
-                        {{ toDoStatus.description }} ({{ getToDoQuan(toDoStatus.id) }})
+                        {{ toDoStatus.description | transloco }} ({{ getToDoQuan(toDoStatus.id) }})
                     </th>
                 }
             }
