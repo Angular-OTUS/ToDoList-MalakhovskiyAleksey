@@ -1,0 +1,19 @@
+{
+    "TaskBoard" : "Панель Задач",
+    "Backlog" : "Долг",
+    "Board" : "Доска",
+    "Delete" : "Удалить",
+    "AddTask"   : "Добавить задачу",
+    "AddTaskInputPlaceHolder": "Добавьте вашу новую задачу",
+    "AddTaskInputTitle" : "название новой задачи",
+    "AddTaskTextAreaPlaceHolder" : "Добавьте ваше новое описание",
+    "AddNewTaskTitle" : "Добавить новую задачу",
+    "NewTaskDescriptionTitle" : "описание новой задачи",
+    "Save" : "Сохранить",
+    "status" : { "ALL" : "ВСЕ",
+                 "created" : "создан",
+                 "inProgress" : "в работе",
+                 "completed" : "завершён",
+                 "rejected" : "отклонён"
+               }
+}

@@ -1,12 +1,27 @@
-
-<div  class="menu-container"> 
-	<h1>TaskBoard</h1>
-	<div  class="content">
-		<router-outlet/>
-	</div>
-	<div><p-megamenu [model]="items" orientation="vertical"/></div>
+<div>
+	@for ( availableLang of availableLangs(); track availableLang ) {
+	@if(availableLang === currentLang() ) {
+	<div
+		style="display: inline; padding: 5px;border: 1px dotted;border-radius: 4px;margin-left: 10px;background-color: white;">
+		{{ availableLang }}</div>
+	}
+	@else {
+	<div style="display: inline; padding: 5px;border: 1px dotted;border-radius: 4px;margin-left: 10px;background-color: gray;cursor: pointer;"
+		(click)="setLang(availableLang)">{{ availableLang }}</div>
+	}
+	}
 </div>
+<div class="menu-container">
 
+	<h2 style="white-space: nowrap;">{{ 'TaskBoard' | transloco }}</h2>
 
-
- 
+	<div class="content">
+		<router-outlet />
+	</div>
+	<div style="padding: 10px;border: 1px dotted black;border-radius: 5px;">
+		<div style="padding: 10px;cursor: pointer;" [routerLink]="['tasks']" routerLinkActive="selected">{{ 'Backlog' |
+			transloco }}</div>
+		<div style="padding: 10px;cursor: pointer;" [routerLink]="['board']" routerLinkActive="selected">{{ 'Board' |
+			transloco }}</div>
+	</div>
+</div>

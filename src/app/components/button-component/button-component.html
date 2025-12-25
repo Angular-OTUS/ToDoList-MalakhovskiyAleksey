@@ -3,7 +3,7 @@
     <input 
         type="button"
         [class]="buttonClasses()"
-        [value]="buttonTitle()"
+        [value]="buttonTitle() | transloco"
         [style.opacity]="buttonOpacity()"
         [disabled]="disabled()"
         (click)="action()"
