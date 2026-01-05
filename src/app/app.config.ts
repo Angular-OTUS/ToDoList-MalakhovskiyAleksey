@@ -35,7 +35,6 @@ export const appConfig: ApplicationConfig = {
         preset: Aura
       }
     }),
-    provideHttpClient(),
     provideTransloco({
       config: {
         availableLangs: ['en', 'ru'],

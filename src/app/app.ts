@@ -11,7 +11,7 @@ import { ToDoStatusService } from './services/to-do-status-service'
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
-export class App implements OnInit {
+export class App {
 
   protected readonly title = signal('otus-tut')
  
@@ -22,20 +22,8 @@ export class App implements OnInit {
   availableLangs = signal(this.al)
   currentLang = signal(this.translocoService.getDefaultLang())
 
-  backlog = this.translocoService.translate('Backlog')
-  board = this.translocoService.translate('Board')
-
-  ngOnInit() {
-
-    this.translocoService.selectTranslate('Backlog').subscribe( val => this.backlog = val )
-    this.translocoService.selectTranslate('Board').subscribe( val => this.board = val )
-
-  }
-
   setLang ( lang : string | LangDefinition ) : void {
     this.translocoService.setActiveLang(lang.toString())
     this.currentLang.update ( () => this.translocoService.getActiveLang() )
-
-    //this.toDoStatusService.initStatuses()
   }
 }
