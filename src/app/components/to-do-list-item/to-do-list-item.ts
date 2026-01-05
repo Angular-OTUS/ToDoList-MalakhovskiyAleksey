@@ -7,10 +7,11 @@ import { ToDoListService } from '../../services/to-do-list-service';
 import { ButtonComponent } from '../../components/button-component/button-component'
 import { ToDoStatus } from '../../entities/to-do-status';
 import { ToDoStatusService } from '../../services/to-do-status-service';
+import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-to-do-list-item',
-  imports: [FormsModule,Highlight,TextTitle,ButtonComponent],
+  imports: [FormsModule,Highlight,TextTitle,ButtonComponent,TranslocoModule],
   templateUrl: './to-do-list-item.html',
   styleUrl: './to-do-list-item.css'
 })

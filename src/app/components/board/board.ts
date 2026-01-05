@@ -4,10 +4,11 @@ import { ToDoStatus } from '../../entities/to-do-status';
 import { ToDo } from '../../entities/toDo';
 import { ToDoListService } from '../../services/to-do-list-service';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { TranslocoModule }  from "@jsverse/transloco"
 
 @Component({
   selector: 'app-board',
-  imports: [],
+  imports: [TranslocoModule],
   templateUrl: './board.html',
   styleUrl: './board.css'
 })
