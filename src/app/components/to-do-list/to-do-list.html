@@ -2,13 +2,13 @@
     <img src="gs-animated.gif" alt="loading ...">
 }
 @else {
-    <h2>Backlog</h2>
+    <h2>{{ 'Backlog' | transloco }} </h2>
 
     <div>
         <div style="display: inline;">
             <select [(ngModel)]="fl" (ngModelChange)="onFlChange($event)">
                 @for ( toDoStatus of toDoStatusList; track toDoStatus.id )  {
-                    <option [value]="toDoStatus.id">{{ toDoStatus.description}}</option>    
+                    <option [value]="toDoStatus.id">{{ toDoStatus.description | transloco }}</option>    
                 }
             </select>
         </div>

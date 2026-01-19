@@ -1,8 +1,9 @@
 import { Component, input, output } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-button-component',
-  imports: [],
+  imports: [TranslocoModule],
   templateUrl: './button-component.html',
   styleUrl: './button-component.css'
 })

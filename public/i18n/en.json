@@ -1,0 +1,19 @@
+{
+    "TaskBoard" : "Task Board",
+    "Backlog"   : "Backlog",
+    "Board"     : "Board",
+    "Delete"    : "Delete",
+    "AddTask"   : "Add task",
+    "AddTaskInputPlaceHolder": "Add your new todo",
+    "AddTaskInputTitle" : "new task name",
+    "AddTaskTextAreaPlaceHolder" : "Add your new tooltip",
+    "AddNewTaskTitle" : "Add new task",
+    "NewTaskDescriptionTitle" : "new task description",
+    "Save" : "Save",
+    "status" : { "ALL" : "ALL",
+                 "created" : "created",
+                 "inProgress" : "in progress",
+                 "completed" : "completed",
+                 "rejected" : "rejected"
+               }
+}

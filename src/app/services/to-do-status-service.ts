@@ -1,17 +1,20 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { ToDoStatus } from '../entities/to-do-status';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ToDoStatusService {
   
+  transLocoService = inject ( TranslocoService )
+
   private toDoStatusList : ToDoStatus[] = [
-    new ToDoStatus ( "all", "ALL" ),
-    new ToDoStatus ( "Created", "created" ),
-    new ToDoStatus ( "InProgress", "in progress" ),
-    new ToDoStatus ( "Completed", "completed" ),
-    new ToDoStatus ( "Rejected", "rejected" ),
+    new ToDoStatus ( "all", "status.ALL" ),
+    new ToDoStatus ( "Created", "status.created" ),
+    new ToDoStatus ( "InProgress", "status.inProgress" ),
+    new ToDoStatus ( "Completed", "status.completed" ),
+    new ToDoStatus ( "Rejected", "status.rejected" ),
   ]
 
   public list() : ToDoStatus[] {

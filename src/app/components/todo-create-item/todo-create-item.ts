@@ -1,5 +1,6 @@
 import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms'
+import { TranslocoModule } from "@jsverse/transloco"
 
 import { TextTitle } from '../../directives'
 import { ToDo } from '../../entities/toDo';
@@ -7,7 +8,7 @@ import { ToDoStatusService } from '../../services/to-do-status-service';
 
 @Component({
   selector: 'app-todo-create-item',
-  imports: [TextTitle, FormsModule],
+  imports: [TextTitle, FormsModule, TranslocoModule],
   templateUrl: './todo-create-item.html',
   styleUrl: './todo-create-item.css'
 })
